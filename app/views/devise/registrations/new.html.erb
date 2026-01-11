@@ -1,0 +1,46 @@
+<div class="max-w-md mx-auto mt-4 sm:mt-8 px-4 sm:px-0">
+  <div class="bg-white p-5 sm:p-8 rounded-xl shadow-md">
+    <h2 class="text-xl sm:text-2xl font-bold text-center mb-4 sm:mb-6"><%= t('nav.sign_up') %></h2>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-4" }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div>
+        <%= f.label :username, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :username, autofocus: true, autocomplete: "username",
+            class: "w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-base",
+            placeholder: t('activerecord.attributes.user.username', default: 'Username') %>
+      </div>
+
+      <div>
+        <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.email_field :email, autocomplete: "email",
+            class: "w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-base",
+            placeholder: "your@email.com" %>
+      </div>
+
+      <div>
+        <%= f.label :password, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <% if @minimum_password_length %>
+          <span class="text-xs text-gray-500">(<%= @minimum_password_length %> <%= t('common.characters_minimum', default: 'characters minimum') %>)</span>
+        <% end %>
+        <%= f.password_field :password, autocomplete: "new-password",
+            class: "w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-base" %>
+      </div>
+
+      <div>
+        <%= f.label :password_confirmation, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password",
+            class: "w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-base" %>
+      </div>
+
+      <div class="pt-2 sm:pt-4">
+        <%= f.submit t('nav.sign_up'), class: "w-full bg-red-600 text-white py-2.5 sm:py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition cursor-pointer text-sm sm:text-base" %>
+      </div>
+    <% end %>
+
+    <div class="mt-4 sm:mt-6 text-center text-sm text-gray-600">
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</div>

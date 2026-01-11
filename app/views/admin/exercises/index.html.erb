@@ -1,0 +1,123 @@
+<% content_for(:page_title, t('admin.exercises')) %>
+
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:mb-6">
+  <p class="text-gray-600 text-sm sm:text-base"><%= t('admin.exercises_total', count: @exercises.count) %></p>
+  <%= link_to t('admin.new_exercise'), new_admin_exercise_path, class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition text-center text-sm sm:text-base" %>
+</div>
+
+<!-- Desktop Table -->
+<div class="bg-white rounded-lg shadow overflow-hidden hidden sm:block">
+  <table class="w-full">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('admin.lessons') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('admin.title') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell"><%= t('admin.points') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden lg:table-cell"><%= t('admin.submissions') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('admin.stats.pass_rate') %></th>
+        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase"><%= t('admin.actions') %></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      <% @exercises.each do |exercise| %>
+        <%
+          total = exercise.code_submissions.count
+          passed = exercise.code_submissions.where(passed: true).count
+          pass_rate = total > 0 ? ((passed.to_f / total) * 100).round : 0
+        %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="inline-flex items-center justify-center w-6 h-6 bg-red-100 text-red-600 rounded text-xs font-semibold mr-2">
+              <%= exercise.lesson.module_number %>
+            </span>
+            <span class="text-gray-600 text-sm hidden md:inline"><%= truncate(exercise.lesson.title, length: 20) %></span>
+          </td>
+          <td class="px-6 py-4">
+            <div class="font-medium text-gray-800"><%= exercise.title %></div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-600 hidden md:table-cell">
+            <%= exercise.points %> pts
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-600 hidden lg:table-cell">
+            <%= total %>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <% if total > 0 %>
+              <div class="flex items-center">
+                <div class="w-12 sm:w-16 bg-gray-200 rounded-full h-2 mr-2">
+                  <div class="bg-green-500 rounded-full h-2" style="width: <%= pass_rate %>%"></div>
+                </div>
+                <span class="text-xs sm:text-sm text-gray-600"><%= pass_rate %>%</span>
+              </div>
+            <% else %>
+              <span class="text-gray-400">-</span>
+            <% end %>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+            <%= link_to t('admin.view'), admin_exercise_path(exercise), class: "text-blue-600 hover:text-blue-800 mr-2 sm:mr-3" %>
+            <%= link_to t('admin.edit'), edit_admin_exercise_path(exercise), class: "text-gray-600 hover:text-gray-800 mr-2 sm:mr-3" %>
+            <%= button_to t('admin.delete'), admin_exercise_path(exercise), method: :delete,
+                data: { turbo_confirm: t('admin.confirm_delete_exercise') },
+                class: "text-red-600 hover:text-red-800" %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @exercises.empty? %>
+        <tr>
+          <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+            <%= t('admin.no_exercises_yet') %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Mobile Cards -->
+<div class="sm:hidden space-y-3">
+  <% @exercises.each do |exercise| %>
+    <%
+      total = exercise.code_submissions.count
+      passed = exercise.code_submissions.where(passed: true).count
+      pass_rate = total > 0 ? ((passed.to_f / total) * 100).round : 0
+    %>
+    <div class="bg-white rounded-lg shadow p-4">
+      <div class="flex items-start justify-between mb-2">
+        <div class="flex items-start min-w-0">
+          <span class="inline-flex items-center justify-center w-6 h-6 bg-red-100 text-red-600 rounded text-xs font-semibold flex-shrink-0">
+            <%= exercise.lesson.module_number %>
+          </span>
+          <div class="ml-2 min-w-0">
+            <div class="font-medium text-gray-800 truncate"><%= exercise.title %></div>
+            <div class="text-xs text-gray-500 truncate"><%= exercise.lesson.title %></div>
+          </div>
+        </div>
+        <span class="text-xs text-gray-600 flex-shrink-0 ml-2"><%= exercise.points %> pts</span>
+      </div>
+      <div class="flex items-center justify-between mt-3">
+        <div class="flex items-center">
+          <% if total > 0 %>
+            <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+              <div class="bg-green-500 rounded-full h-2" style="width: <%= pass_rate %>%"></div>
+            </div>
+            <span class="text-xs text-gray-600"><%= pass_rate %>% (<%= total %>)</span>
+          <% else %>
+            <span class="text-xs text-gray-400">No submissions</span>
+          <% end %>
+        </div>
+        <div class="flex items-center space-x-3 text-sm">
+          <%= link_to t('admin.view'), admin_exercise_path(exercise), class: "text-blue-600 hover:text-blue-800" %>
+          <%= link_to t('admin.edit'), edit_admin_exercise_path(exercise), class: "text-gray-600 hover:text-gray-800" %>
+          <%= button_to t('admin.delete'), admin_exercise_path(exercise), method: :delete,
+              data: { turbo_confirm: t('admin.confirm_delete_exercise') },
+              class: "text-red-600 hover:text-red-800" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <% if @exercises.empty? %>
+    <div class="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+      <%= t('admin.no_exercises_yet') %>
+    </div>
+  <% end %>
+</div>

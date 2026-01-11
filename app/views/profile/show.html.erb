@@ -1,0 +1,195 @@
+<div class="max-w-6xl mx-auto">
+  <!-- Profile Header -->
+  <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-8 text-white">
+    <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-8">
+      <!-- Avatar -->
+      <div class="bg-white/20 rounded-full w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center text-2xl sm:text-4xl font-bold flex-shrink-0">
+        <%= @user.username[0].upcase %>
+      </div>
+
+      <!-- User Info -->
+      <div class="flex-1 text-center md:text-left min-w-0">
+        <h1 class="text-2xl sm:text-3xl font-bold mb-2 truncate"><%= @user.username %></h1>
+        <div class="flex flex-wrap justify-center md:justify-start gap-2 sm:gap-4 text-red-100 text-sm sm:text-base">
+          <span><%= t('profile.joined_ago', time: time_ago_in_words(@user.created_at)) %></span>
+          <span><%= t('profile.rank', rank: @user.rank) %></span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-3 gap-4 sm:gap-6 text-center">
+        <div>
+          <div class="text-2xl sm:text-3xl font-bold"><%= @user.level %></div>
+          <div class="text-red-100 text-xs sm:text-sm"><%= t('profile.level') %></div>
+        </div>
+        <div>
+          <div class="text-2xl sm:text-3xl font-bold"><%= number_with_delimiter(@user.total_points) %></div>
+          <div class="text-red-100 text-xs sm:text-sm"><%= t('profile.points') %></div>
+        </div>
+        <div>
+          <div class="text-2xl sm:text-3xl font-bold">
+            <% if @user.current_streak > 0 %>
+              🔥 <%= @user.current_streak %>
+            <% else %>
+              0
+            <% end %>
+          </div>
+          <div class="text-red-100 text-xs sm:text-sm"><%= t('profile.streak') %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Level Progress -->
+    <div class="mt-4 sm:mt-6">
+      <div class="flex justify-between text-xs sm:text-sm text-red-100 mb-2">
+        <span><%= t('profile.level') %> <%= @user.level %></span>
+        <span class="text-right"><%= t('profile.next_level', points: @user.points_to_next_level, level: @user.level + 1) %></span>
+      </div>
+      <div class="w-full bg-white/20 rounded-full h-2 sm:h-3">
+        <div class="bg-white h-2 sm:h-3 rounded-full transition-all duration-300"
+             style="width: <%= @user.level_progress_percentage %>%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+    <!-- Left Column: Stats & Achievements -->
+    <div class="lg:col-span-1 space-y-4 sm:space-y-6">
+      <!-- Quick Stats -->
+      <div class="bg-white rounded-xl shadow-md p-4 sm:p-6">
+        <h2 class="font-semibold text-gray-800 mb-3 sm:mb-4"><%= t('profile.stats') %></h2>
+        <dl class="space-y-3 sm:space-y-4 text-sm sm:text-base">
+          <div class="flex justify-between gap-2">
+            <dt class="text-gray-500"><%= t('profile.exercises_completed') %></dt>
+            <dd class="font-semibold"><%= @user.completed_exercises_count %></dd>
+          </div>
+          <div class="flex justify-between gap-2">
+            <dt class="text-gray-500"><%= t('profile.total_submissions') %></dt>
+            <dd class="font-semibold"><%= @user.code_submissions.count %></dd>
+          </div>
+          <div class="flex justify-between gap-2">
+            <dt class="text-gray-500"><%= t('profile.current_streak') %></dt>
+            <dd class="font-semibold text-orange-600">
+              <% if @user.current_streak > 0 %>
+                🔥 <%= @user.current_streak %> <%= t('profile.days') %>
+              <% else %>
+                <%= t('profile.no_active_streak') %>
+              <% end %>
+            </dd>
+          </div>
+          <div class="flex justify-between gap-2">
+            <dt class="text-gray-500"><%= t('profile.longest_streak') %></dt>
+            <dd class="font-semibold"><%= @user.longest_streak %> <%= t('profile.days') %></dd>
+          </div>
+          <div class="flex justify-between gap-2">
+            <dt class="text-gray-500"><%= t('profile.achievements') %></dt>
+            <dd class="font-semibold"><%= @achievements.count %> / <%= @all_achievements.count %></dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Achievements -->
+      <div class="bg-white rounded-xl shadow-md p-4 sm:p-6">
+        <h2 class="font-semibold text-gray-800 mb-3 sm:mb-4"><%= t('profile.achievements') %></h2>
+
+        <% if @all_achievements.any? %>
+          <div class="grid grid-cols-4 sm:grid-cols-4 gap-2 sm:gap-3">
+            <% @all_achievements.each do |achievement| %>
+              <% earned = @user.has_achievement?(achievement) %>
+              <div class="relative group">
+                <div class="text-2xl sm:text-3xl text-center p-1.5 sm:p-2 rounded-lg
+                            <%= earned ? 'bg-yellow-100' : 'bg-gray-100 opacity-40 grayscale' %>">
+                  <%= achievement.badge_icon %>
+                </div>
+                <!-- Tooltip -->
+                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 hidden sm:block">
+                  <div class="font-semibold"><%= achievement.name %></div>
+                  <div class="text-gray-300"><%= achievement.description %></div>
+                  <% unless earned %>
+                    <div class="text-yellow-400 mt-1"><%= t('profile.not_earned') %></div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-gray-500 text-center py-4 text-sm"><%= t('profile.no_achievements') %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Right Column: Activity -->
+    <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+      <!-- Completed Exercises -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="p-3 sm:p-4 bg-gray-50 border-b">
+          <h2 class="font-semibold text-gray-800 text-sm sm:text-base"><%= t('profile.completed_exercises') %></h2>
+        </div>
+
+        <% if @completed_exercises.any? %>
+          <div class="divide-y divide-gray-100 max-h-80 sm:max-h-96 overflow-y-auto">
+            <% @completed_exercises.each do |progress| %>
+              <%= link_to lesson_exercise_path(progress.exercise.lesson, progress.exercise),
+                          class: "flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 transition" do %>
+                <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                  <span class="text-green-500 text-lg sm:text-xl flex-shrink-0">✓</span>
+                  <div class="min-w-0">
+                    <div class="font-medium text-gray-800 text-sm sm:text-base truncate"><%= progress.exercise.translated_title %></div>
+                    <div class="text-xs sm:text-sm text-gray-500 truncate"><%= progress.exercise.lesson.translated_title %></div>
+                  </div>
+                </div>
+                <div class="text-right flex-shrink-0 ml-2">
+                  <div class="text-xs sm:text-sm font-medium text-green-600">+<%= progress.points_earned %></div>
+                  <div class="text-xs text-gray-400"><%= progress.attempts %> <%= t('profile.attempts') %></div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="p-6 sm:p-8 text-center text-gray-500">
+            <div class="text-3xl sm:text-4xl mb-2">📝</div>
+            <p class="text-sm sm:text-base"><%= t('profile.no_completed') %></p>
+            <%= link_to t('profile.start_learning'), lessons_path, class: "text-red-600 hover:underline text-sm sm:text-base" %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="p-3 sm:p-4 bg-gray-50 border-b">
+          <h2 class="font-semibold text-gray-800 text-sm sm:text-base"><%= t('profile.recent_submissions') %></h2>
+        </div>
+
+        <% if @recent_submissions.any? %>
+          <div class="divide-y divide-gray-100">
+            <% @recent_submissions.each do |submission| %>
+              <div class="flex items-center justify-between p-3 sm:p-4">
+                <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                  <span class="text-lg sm:text-xl flex-shrink-0">
+                    <%= submission.passed? ? '✅' : '❌' %>
+                  </span>
+                  <div class="min-w-0">
+                    <div class="font-medium text-gray-800 text-sm sm:text-base truncate"><%= submission.exercise.translated_title %></div>
+                    <div class="text-xs sm:text-sm text-gray-500">
+                      <%= time_ago_in_words(submission.created_at) %> <%= t('common.ago', default: 'ago') %>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-right text-xs sm:text-sm flex-shrink-0 ml-2">
+                  <% if submission.execution_time %>
+                    <span class="text-gray-500"><%= (submission.execution_time * 1000).round %>ms</span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="p-6 sm:p-8 text-center text-gray-500">
+            <div class="text-3xl sm:text-4xl mb-2">💻</div>
+            <p class="text-sm sm:text-base"><%= t('profile.no_submissions') %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

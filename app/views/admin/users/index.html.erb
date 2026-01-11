@@ -1,0 +1,156 @@
+<% content_for(:page_title, t('admin.users')) %>
+
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:mb-6">
+  <p class="text-gray-600 text-sm sm:text-base"><%= t('admin.users_total', count: @total_count) %></p>
+
+  <%= form_with url: admin_users_path, method: :get, class: "flex items-center space-x-2" do %>
+    <%= text_field_tag :search, params[:search],
+        placeholder: t('admin.search_placeholder'),
+        class: "flex-1 sm:flex-none px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 sm:w-64 text-base" %>
+    <%= submit_tag t('admin.search'), class: "bg-red-600 hover:bg-red-700 text-white px-3 sm:px-4 py-2 rounded-lg transition cursor-pointer text-sm sm:text-base" %>
+    <% if params[:search].present? %>
+      <%= link_to t('admin.clear'), admin_users_path, class: "text-gray-600 hover:text-gray-800 text-sm" %>
+    <% end %>
+  <% end %>
+</div>
+
+<!-- Desktop Table -->
+<div class="bg-white rounded-lg shadow overflow-hidden hidden sm:block">
+  <table class="w-full">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('admin.user') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('admin.level') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('admin.points') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden lg:table-cell"><%= t('admin.streak') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell"><%= t('admin.joined') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('admin.role') %></th>
+        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase"><%= t('admin.actions') %></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      <% @users.each do |user| %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4">
+            <div class="flex items-center">
+              <div class="bg-red-100 text-red-600 rounded-full w-10 h-10 flex items-center justify-center font-semibold mr-3">
+                <%= user.username[0].upcase %>
+              </div>
+              <div>
+                <div class="font-medium text-gray-800"><%= user.username %></div>
+                <div class="text-sm text-gray-500"><%= user.email %></div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+              Lvl <%= user.level %>
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+            <%= user.total_points %> pts
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-600 hidden lg:table-cell">
+            <% if user.current_streak > 0 %>
+              <span class="text-orange-500">🔥</span> <%= user.current_streak %>
+            <% else %>
+              -
+            <% end %>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-sm hidden md:table-cell">
+            <%= l(user.created_at, format: :short) %>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <% if user.admin? %>
+              <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                <%= t('admin.admin_role') %>
+              </span>
+            <% else %>
+              <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                <%= t('admin.user_role') %>
+              </span>
+            <% end %>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+            <%= link_to t('admin.view'), admin_user_path(user), class: "text-blue-600 hover:text-blue-800 mr-3" %>
+            <%= link_to t('admin.edit'), edit_admin_user_path(user), class: "text-gray-600 hover:text-gray-800" %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @users.empty? %>
+        <tr>
+          <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+            <%= t('admin.no_users_found') %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Mobile Cards -->
+<div class="sm:hidden space-y-3">
+  <% @users.each do |user| %>
+    <div class="bg-white rounded-lg shadow p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center min-w-0">
+          <div class="bg-red-100 text-red-600 rounded-full w-10 h-10 flex items-center justify-center font-semibold flex-shrink-0">
+            <%= user.username[0].upcase %>
+          </div>
+          <div class="ml-3 min-w-0">
+            <div class="font-medium text-gray-800 truncate"><%= user.username %></div>
+            <div class="text-xs text-gray-500 truncate"><%= user.email %></div>
+          </div>
+        </div>
+        <% if user.admin? %>
+          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 flex-shrink-0 ml-2">
+            <%= t('admin.admin_role') %>
+          </span>
+        <% end %>
+      </div>
+      <div class="flex items-center justify-between text-sm">
+        <div class="flex items-center space-x-3 text-gray-600">
+          <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            Lvl <%= user.level %>
+          </span>
+          <span><%= user.total_points %> pts</span>
+          <% if user.current_streak > 0 %>
+            <span><span class="text-orange-500">🔥</span> <%= user.current_streak %></span>
+          <% end %>
+        </div>
+        <div class="flex items-center space-x-3">
+          <%= link_to t('admin.view'), admin_user_path(user), class: "text-blue-600 hover:text-blue-800" %>
+          <%= link_to t('admin.edit'), edit_admin_user_path(user), class: "text-gray-600 hover:text-gray-800" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <% if @users.empty? %>
+    <div class="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+      <%= t('admin.no_users_found') %>
+    </div>
+  <% end %>
+</div>
+
+<!-- Pagination -->
+<% if @total_pages > 1 %>
+  <div class="mt-4 sm:mt-6 flex justify-center">
+    <nav class="flex items-center space-x-1">
+      <% if @page > 1 %>
+        <%= link_to admin_users_path(page: @page - 1, search: params[:search]), class: "px-2 sm:px-3 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100 text-sm" do %>
+          &larr; <span class="hidden sm:inline"><%= t('admin.previous') %></span>
+        <% end %>
+      <% end %>
+
+      <span class="px-2 sm:px-3 py-2 text-gray-600 text-sm">
+        <%= t('admin.page_of', page: @page, total: @total_pages) %>
+      </span>
+
+      <% if @page < @total_pages %>
+        <%= link_to admin_users_path(page: @page + 1, search: params[:search]), class: "px-2 sm:px-3 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100 text-sm" do %>
+          <span class="hidden sm:inline"><%= t('admin.next') %></span> &rarr;
+        <% end %>
+      <% end %>
+    </nav>
+  </div>
+<% end %>

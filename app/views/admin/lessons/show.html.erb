@@ -1,0 +1,123 @@
+<% content_for(:page_title, @lesson.title) %>
+
+<div class="mb-4 sm:mb-6">
+  <%= link_to "← #{t('admin.back_to')} #{t('admin.lessons')}", admin_lessons_path, class: "text-gray-600 hover:text-gray-800 text-sm sm:text-base" %>
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-hidden mb-4 sm:mb-6">
+  <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+    <h3 class="text-base sm:text-lg font-semibold text-gray-800"><%= t('admin.lesson_details') %></h3>
+    <div class="flex flex-wrap gap-2">
+      <%= link_to t('admin.edit'), edit_admin_lesson_path(@lesson), class: "bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm transition" %>
+      <%= button_to t('admin.delete'), admin_lesson_path(@lesson), method: :delete,
+          data: { turbo_confirm: t('admin.confirm_delete_exercise') },
+          class: "bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded text-sm transition" %>
+    </div>
+  </div>
+
+  <div class="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+    <div>
+      <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('activerecord.attributes.lesson.title') %></label>
+      <p class="text-gray-800 text-sm sm:text-base"><%= @lesson.title %></p>
+    </div>
+    <div>
+      <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('activerecord.attributes.lesson.module_number') %></label>
+      <p class="text-gray-800 text-sm sm:text-base"><%= @lesson.module_number %></p>
+    </div>
+    <div>
+      <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('activerecord.attributes.lesson.difficulty') %></label>
+      <p class="text-gray-800 text-sm sm:text-base"><%= t("lessons.difficulty.#{@lesson.difficulty}") %></p>
+    </div>
+    <div>
+      <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('lessons.ruby_version') %></label>
+      <p class="text-gray-800 text-sm sm:text-base"><%= @lesson.ruby_version %></p>
+    </div>
+    <div class="sm:col-span-2">
+      <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('activerecord.attributes.lesson.description') %></label>
+      <p class="text-gray-800 text-sm sm:text-base"><%= @lesson.description %></p>
+    </div>
+  </div>
+</div>
+
+<!-- Exercises -->
+<div class="bg-white rounded-lg shadow overflow-hidden">
+  <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+    <h3 class="text-base sm:text-lg font-semibold text-gray-800"><%= t('admin.exercises') %> (<%= @exercises.count %>)</h3>
+    <%= link_to t('admin.new_exercise'), new_admin_exercise_path(lesson_id: @lesson.id), class: "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition text-center" %>
+  </div>
+
+  <!-- Desktop table -->
+  <div class="hidden sm:block">
+    <table class="w-full">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('activerecord.attributes.lesson.position') %></th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('activerecord.attributes.exercise.title') %></th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell"><%= t('admin.points') %></th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell"><%= t('admin.submissions') %></th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase"><%= t('admin.actions') %></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <% @exercises.each do |exercise| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+              <%= exercise.position %>
+            </td>
+            <td class="px-6 py-4">
+              <div class="font-medium text-gray-800"><%= exercise.title %></div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-gray-600 hidden md:table-cell">
+              <%= exercise.points %> pts
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-gray-600 hidden md:table-cell">
+              <%= exercise.code_submissions.count %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+              <%= link_to t('admin.edit'), edit_admin_exercise_path(exercise), class: "text-gray-600 hover:text-gray-800 mr-3" %>
+              <%= button_to t('admin.delete'), admin_exercise_path(exercise), method: :delete,
+                  data: { turbo_confirm: t('admin.confirm_delete_exercise') },
+                  class: "text-red-600 hover:text-red-800" %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @exercises.empty? %>
+          <tr>
+            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+              <%= t('admin.no_exercises_yet') %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile list -->
+  <div class="sm:hidden divide-y divide-gray-200">
+    <% @exercises.each do |exercise| %>
+      <div class="px-4 py-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center min-w-0">
+            <span class="text-gray-500 text-sm mr-2">#<%= exercise.position %></span>
+            <span class="font-medium text-gray-800 text-sm truncate"><%= exercise.title %></span>
+          </div>
+          <span class="text-xs text-gray-600 ml-2"><%= exercise.points %> pts</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-gray-500"><%= exercise.code_submissions.count %> submissions</span>
+          <div class="flex items-center space-x-3 text-sm">
+            <%= link_to t('admin.edit'), edit_admin_exercise_path(exercise), class: "text-gray-600 hover:text-gray-800" %>
+            <%= button_to t('admin.delete'), admin_exercise_path(exercise), method: :delete,
+                data: { turbo_confirm: t('admin.confirm_delete_exercise') },
+                class: "text-red-600 hover:text-red-800" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <% if @exercises.empty? %>
+      <div class="px-4 py-8 text-center text-gray-500 text-sm">
+        <%= t('admin.no_exercises_yet') %>
+      </div>
+    <% end %>
+  </div>
+</div>

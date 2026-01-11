@@ -1,0 +1,10 @@
+<% content_for(:page_title, "#{t('admin.edit')} #{@lesson.title}") %>
+
+<div class="mb-4 sm:mb-6">
+  <%= link_to "← #{t('admin.back_to')} #{t('admin.lessons')}", admin_lesson_path(@lesson), class: "text-gray-600 hover:text-gray-800 text-sm sm:text-base" %>
+</div>
+
+<div class="bg-white rounded-lg shadow p-4 sm:p-6">
+  <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-4 sm:mb-6"><%= t('admin.edit_lesson') %></h3>
+  <%= render "form" %>
+</div>

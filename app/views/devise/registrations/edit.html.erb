@@ -1,0 +1,63 @@
+<div class="max-w-md mx-auto mt-4 sm:mt-8 px-4 sm:px-0">
+  <div class="bg-white p-5 sm:p-8 rounded-xl shadow-md">
+    <h2 class="text-xl sm:text-2xl font-bold text-center mb-4 sm:mb-6"><%= t('profile.title', default: 'Edit Profile') %></h2>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "space-y-4" }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div>
+        <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email",
+            class: "w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-base" %>
+      </div>
+
+      <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+        <div class="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg">
+          <%= t('devise.registrations.edit.currently_waiting_confirmation_for_email', email: resource.unconfirmed_email, default: "Currently waiting confirmation for: #{resource.unconfirmed_email}") %>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :password, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <span class="text-xs text-gray-500">(<%= t('devise.registrations.edit.leave_blank_if_you_dont_want_to_change_it', default: 'leave blank if you don\'t want to change it') %>)</span>
+        <% if @minimum_password_length %>
+          <span class="text-xs text-gray-500">(<%= @minimum_password_length %> <%= t('common.characters_minimum', default: 'characters minimum') %>)</span>
+        <% end %>
+        <%= f.password_field :password, autocomplete: "new-password",
+            class: "w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-base mt-1" %>
+      </div>
+
+      <div>
+        <%= f.label :password_confirmation, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password",
+            class: "w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-base" %>
+      </div>
+
+      <div class="pt-4 border-t">
+        <%= f.label :current_password, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <span class="text-xs text-gray-500">(<%= t('devise.registrations.edit.we_need_your_current_password_to_confirm_your_changes', default: 'we need your current password to confirm your changes') %>)</span>
+        <%= f.password_field :current_password, autocomplete: "current-password",
+            class: "w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-base mt-1" %>
+      </div>
+
+      <div class="pt-2 sm:pt-4">
+        <%= f.submit t('common.save', default: 'Save'), class: "w-full bg-red-600 text-white py-2.5 sm:py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition cursor-pointer text-sm sm:text-base" %>
+      </div>
+    <% end %>
+
+    <div class="mt-4 sm:mt-6 text-center">
+      <%= link_to t('common.back', default: 'Back'), :back, class: "text-sm text-gray-500 hover:text-red-600 transition" %>
+    </div>
+  </div>
+
+  <!-- Delete Account Section -->
+  <div class="bg-white p-5 sm:p-8 rounded-xl shadow-md mt-6">
+    <h3 class="text-lg font-semibold text-red-600 mb-4"><%= t('devise.registrations.edit.cancel_my_account', default: 'Cancel my account') %></h3>
+    <p class="text-sm text-gray-600 mb-4"><%= t('devise.registrations.edit.unhappy', default: 'Unhappy?') %></p>
+    <%= button_to t('devise.registrations.edit.cancel_my_account', default: 'Cancel my account'),
+        registration_path(resource_name),
+        data: { confirm: t('common.confirm_delete', default: 'Are you sure?'), turbo_confirm: t('common.confirm_delete', default: 'Are you sure?') },
+        method: :delete,
+        class: "bg-red-100 text-red-600 py-2 px-4 rounded-lg font-medium hover:bg-red-200 transition text-sm" %>
+  </div>
+</div>

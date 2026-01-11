@@ -1,0 +1,108 @@
+# Name of your application. Used to uniquely configure containers.
+service: learn-ruby
+
+# Name of the container image.
+image: ruslanux/learn-ruby
+
+# Deploy to these servers.
+servers:
+  web:
+    hosts:
+      - 192.168.0.1
+    labels:
+      traefik.http.routers.learn-ruby.rule: Host(`learnruby.example.com`)
+    options:
+      network: kamal
+
+# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
+# Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
+proxy:
+  ssl: true
+  host: learnruby.example.com
+
+# Credentials for your image host.
+registry:
+  # Specify the registry server, if you're not using Docker Hub
+  # server: ghcr.io
+  username: ruslanux
+
+  # Always use an access token rather than real password when possible.
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Inject ENV variables into containers (secrets come from .kamal/secrets).
+env:
+  secret:
+    - RAILS_MASTER_KEY
+    - DATABASE_PASSWORD
+  clear:
+    # Database connection
+    DB_HOST: learn-ruby-db
+
+    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
+    SOLID_QUEUE_IN_PUMA: true
+
+    # Rails environment
+    RAILS_ENV: production
+    RAILS_LOG_TO_STDOUT: true
+    RAILS_SERVE_STATIC_FILES: true
+
+    # Set number of cores available to the application (adjust based on server)
+    WEB_CONCURRENCY: 2
+
+    # Sandbox settings
+    SANDBOX_MODE: docker
+
+# Aliases for common commands
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
+  migrate: app exec "bin/rails db:migrate"
+
+# Use a persistent storage volume for local Active Storage files.
+volumes:
+  - "learn_ruby_storage:/rails/storage"
+
+# Bridge fingerprinted assets between versions
+asset_path: /rails/public/assets
+
+# Configure the image builder.
+builder:
+  arch: amd64
+  # Build image via remote server (useful for faster amd64 builds on arm64 computers)
+  # remote: ssh://docker@docker-builder-server
+
+# Accessory services
+accessories:
+  db:
+    image: postgres:16-alpine
+    host: 192.168.0.1
+    port: "127.0.0.1:5432:5432"
+    env:
+      clear:
+        POSTGRES_DB: learn_ruby_production
+        POSTGRES_USER: learn_ruby
+      secret:
+        - DATABASE_PASSWORD
+    directories:
+      - data:/var/lib/postgresql/data
+    options:
+      network: kamal
+
+  redis:
+    image: redis:7-alpine
+    host: 192.168.0.1
+    port: "127.0.0.1:6379:6379"
+    directories:
+      - data:/data
+    options:
+      network: kamal
+
+# Health check configuration
+healthcheck:
+  path: /up
+  port: 3000
+  max_attempts: 10
+  interval: 20s

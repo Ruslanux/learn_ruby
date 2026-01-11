@@ -1,0 +1,53 @@
+<%= form_with model: [:admin, @lesson], class: "space-y-4 sm:space-y-6" do |form| %>
+  <% if @lesson.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
+      <h4 class="text-red-800 font-medium text-sm sm:text-base">
+        <%= t('admin.errors_prohibited', count: @lesson.errors.count) %>:
+      </h4>
+      <ul class="list-disc list-inside mt-2 text-red-700 text-sm">
+        <% @lesson.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+    <div>
+      <%= form.label :title, t('activerecord.attributes.lesson.title'), class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.text_field :title, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 text-base" %>
+    </div>
+
+    <div>
+      <%= form.label :module_number, t('activerecord.attributes.lesson.module_number'), class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.number_field :module_number, min: 1, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 text-base" %>
+    </div>
+
+    <div>
+      <%= form.label :position, t('activerecord.attributes.lesson.position'), class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.number_field :position, min: 1, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 text-base" %>
+    </div>
+
+    <div>
+      <%= form.label :difficulty, t('activerecord.attributes.lesson.difficulty'), class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.select :difficulty, Lesson.difficulties.keys.map { |d| [t("lessons.difficulty.#{d}"), d] },
+          {}, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 text-base" %>
+    </div>
+
+    <div class="sm:col-span-2 sm:max-w-xs">
+      <%= form.label :ruby_version, t('lessons.ruby_version'), class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.text_field :ruby_version, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 text-base" %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :description, t('activerecord.attributes.lesson.description'), class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= form.text_area :description, rows: 4, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 text-base" %>
+    <p class="text-xs sm:text-sm text-gray-500 mt-1"><%= t('admin.supports_markdown') %></p>
+  </div>
+
+  <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:space-x-3">
+    <%= link_to t('admin.cancel'), admin_lessons_path, class: "px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-center text-sm sm:text-base" %>
+    <%= form.submit class: "px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition cursor-pointer text-sm sm:text-base" %>
+  </div>
+<% end %>

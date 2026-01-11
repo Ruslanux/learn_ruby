@@ -1,0 +1,165 @@
+<% content_for(:page_title, @exercise.title) %>
+
+<div class="mb-4 sm:mb-6">
+  <%= link_to "← #{t('admin.back_to')} #{@exercise.lesson.title}", admin_lesson_path(@exercise.lesson), class: "text-gray-600 hover:text-gray-800 text-sm sm:text-base" %>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+  <!-- Main Content -->
+  <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+    <!-- Basic Info -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-800"><%= t('admin.exercise_details') %></h3>
+        <div class="flex flex-wrap gap-2">
+          <%= link_to t('admin.edit'), edit_admin_exercise_path(@exercise), class: "bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm transition" %>
+          <%= button_to t('admin.delete'), admin_exercise_path(@exercise), method: :delete,
+              data: { turbo_confirm: t('admin.confirm_delete_exercise') },
+              class: "bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded text-sm transition" %>
+        </div>
+      </div>
+
+      <div class="p-4 sm:p-6 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          <div>
+            <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('admin.lesson') %></label>
+            <p class="text-gray-800 text-sm sm:text-base"><%= @exercise.lesson.title %></p>
+          </div>
+          <div>
+            <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('admin.points') %></label>
+            <p class="text-gray-800 text-sm sm:text-base"><%= @exercise.points %></p>
+          </div>
+          <div>
+            <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('admin.position') %></label>
+            <p class="text-gray-800 text-sm sm:text-base"><%= @exercise.position %></p>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('activerecord.attributes.exercise.description') %></label>
+          <div class="prose prose-sm max-w-none text-gray-800 bg-gray-50 p-3 sm:p-4 rounded-lg text-sm">
+            <%= simple_format(@exercise.description) %>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('activerecord.attributes.exercise.instructions') %></label>
+          <div class="prose prose-sm max-w-none text-gray-800 bg-gray-50 p-3 sm:p-4 rounded-lg text-sm">
+            <%= simple_format(@exercise.instructions) %>
+          </div>
+        </div>
+
+        <% if @exercise.hints.present? %>
+          <div>
+            <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('activerecord.attributes.exercise.hints') %></label>
+            <ul class="list-disc list-inside text-gray-800 bg-gray-50 p-3 sm:p-4 rounded-lg text-sm">
+              <% @exercise.hints.each do |hint| %>
+                <li><%= hint %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <% if @exercise.topics.present? %>
+          <div>
+            <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-1"><%= t('activerecord.attributes.exercise.topics') %></label>
+            <div class="flex flex-wrap gap-2">
+              <% @exercise.topics.each do |topic| %>
+                <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                  <%= topic %>
+                </span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Code Sections -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-800"><%= t('admin.code') %></h3>
+      </div>
+
+      <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div>
+          <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-2"><%= t('activerecord.attributes.exercise.starter_code') %></label>
+          <pre class="bg-gray-900 text-gray-100 p-3 sm:p-4 rounded-lg text-xs sm:text-sm overflow-x-auto"><code><%= @exercise.starter_code %></code></pre>
+        </div>
+
+        <div>
+          <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-2"><%= t('activerecord.attributes.exercise.solution_code') %></label>
+          <pre class="bg-gray-900 text-gray-100 p-3 sm:p-4 rounded-lg text-xs sm:text-sm overflow-x-auto"><code><%= @exercise.solution_code %></code></pre>
+        </div>
+
+        <div>
+          <label class="block text-xs sm:text-sm font-medium text-gray-500 mb-2"><%= t('activerecord.attributes.exercise.test_code') %></label>
+          <pre class="bg-gray-900 text-gray-100 p-3 sm:p-4 rounded-lg text-xs sm:text-sm overflow-x-auto"><code><%= @exercise.test_code %></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="space-y-4 sm:space-y-6">
+    <!-- Stats -->
+    <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+      <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4"><%= t('admin.statistics') %></h3>
+      <%
+        total = @exercise.code_submissions.count
+        passed = @exercise.code_submissions.where(passed: true).count
+        pass_rate = total > 0 ? ((passed.to_f / total) * 100).round(1) : 0
+        completions = @exercise.user_progresses.completed.count
+      %>
+      <dl class="space-y-2 sm:space-y-3 text-sm">
+        <div class="flex justify-between">
+          <dt class="text-gray-500"><%= t('admin.stats.total_submissions') %></dt>
+          <dd class="font-semibold text-gray-800"><%= total %></dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-gray-500"><%= t('admin.passed') %></dt>
+          <dd class="font-semibold text-green-600"><%= passed %></dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-gray-500"><%= t('admin.stats.pass_rate') %></dt>
+          <dd class="font-semibold text-gray-800"><%= pass_rate %>%</dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-gray-500"><%= t('admin.completions') %></dt>
+          <dd class="font-semibold text-gray-800"><%= completions %></dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Recent Submissions -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-800"><%= t('admin.recent_submissions') %></h3>
+      </div>
+      <ul class="divide-y divide-gray-200 max-h-64 sm:max-h-96 overflow-y-auto">
+        <% @submissions.each do |submission| %>
+          <li class="px-4 sm:px-6 py-2 sm:py-3 flex items-center justify-between hover:bg-gray-50">
+            <div class="min-w-0 flex-1">
+              <span class="text-gray-800 text-sm truncate block"><%= submission.user.username %></span>
+              <span class="text-gray-500 text-xs"><%= time_ago_in_words(submission.created_at) %> <%= t('common.ago') %></span>
+            </div>
+            <% if submission.passed %>
+              <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 ml-2">
+                <%= t('admin.pass') %>
+              </span>
+            <% else %>
+              <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 ml-2">
+                <%= t('admin.fail') %>
+              </span>
+            <% end %>
+          </li>
+        <% end %>
+        <% if @submissions.empty? %>
+          <li class="px-4 sm:px-6 py-6 sm:py-8 text-center text-gray-500 text-sm">
+            <%= t('admin.no_submissions_yet') %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

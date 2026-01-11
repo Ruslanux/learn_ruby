@@ -1,0 +1,113 @@
+<% content_for(:page_title, t('admin.lessons')) %>
+
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:mb-6">
+  <p class="text-gray-600 text-sm sm:text-base"><%= t('admin.lessons_total', count: @lessons.count) %></p>
+  <%= link_to t('admin.new_lesson'), new_admin_lesson_path, class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition text-center text-sm sm:text-base" %>
+</div>
+
+<!-- Desktop Table -->
+<div class="bg-white rounded-lg shadow overflow-hidden hidden sm:block">
+  <table class="w-full">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('admin.module') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('activerecord.attributes.lesson.title') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><%= t('admin.difficulty') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell"><%= t('admin.exercises') %></th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden lg:table-cell"><%= t('admin.ruby') %></th>
+        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase"><%= t('admin.actions') %></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      <% @lessons.each do |lesson| %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="inline-flex items-center justify-center w-8 h-8 bg-red-100 text-red-600 rounded-full font-semibold">
+              <%= lesson.module_number %>
+            </span>
+          </td>
+          <td class="px-6 py-4">
+            <div>
+              <div class="font-medium text-gray-800"><%= lesson.title %></div>
+              <div class="text-sm text-gray-500 hidden md:block"><%= truncate(lesson.description, length: 60) %></div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <% badge_color = case lesson.difficulty
+                            when "beginner" then "bg-green-100 text-green-800"
+                            when "intermediate" then "bg-yellow-100 text-yellow-800"
+                            when "advanced" then "bg-orange-100 text-orange-800"
+                            when "modern" then "bg-purple-100 text-purple-800"
+                            end %>
+            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full <%= badge_color %>">
+              <%= t("lessons.difficulty.#{lesson.difficulty}") %>
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-600 hidden md:table-cell">
+            <%= t('admin.n_exercises', count: lesson.exercises.count) %>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-600 hidden lg:table-cell">
+            <%= lesson.ruby_version %>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+            <%= link_to t('admin.view'), admin_lesson_path(lesson), class: "text-blue-600 hover:text-blue-800 mr-2 sm:mr-3" %>
+            <%= link_to t('admin.edit'), edit_admin_lesson_path(lesson), class: "text-gray-600 hover:text-gray-800 mr-2 sm:mr-3" %>
+            <%= button_to t('admin.delete'), admin_lesson_path(lesson), method: :delete,
+                data: { turbo_confirm: t('admin.confirm_delete_lesson') },
+                class: "text-red-600 hover:text-red-800" %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @lessons.empty? %>
+        <tr>
+          <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+            <%= t('admin.no_lessons_yet') %> <%= link_to t('admin.new_lesson').downcase, new_admin_lesson_path, class: "text-red-600 hover:underline" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Mobile Cards -->
+<div class="sm:hidden space-y-3">
+  <% @lessons.each do |lesson| %>
+    <div class="bg-white rounded-lg shadow p-4">
+      <div class="flex items-start justify-between mb-2">
+        <div class="flex items-start min-w-0">
+          <span class="inline-flex items-center justify-center w-8 h-8 bg-red-100 text-red-600 rounded-full font-semibold flex-shrink-0">
+            <%= lesson.module_number %>
+          </span>
+          <div class="ml-3 min-w-0">
+            <div class="font-medium text-gray-800 truncate"><%= lesson.title %></div>
+            <div class="text-xs text-gray-500"><%= t('admin.n_exercises', count: lesson.exercises.count) %></div>
+          </div>
+        </div>
+        <% badge_color = case lesson.difficulty
+                        when "beginner" then "bg-green-100 text-green-800"
+                        when "intermediate" then "bg-yellow-100 text-yellow-800"
+                        when "advanced" then "bg-orange-100 text-orange-800"
+                        when "modern" then "bg-purple-100 text-purple-800"
+                        end %>
+        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full <%= badge_color %> flex-shrink-0 ml-2">
+          <%= t("lessons.difficulty.#{lesson.difficulty}") %>
+        </span>
+      </div>
+      <div class="flex items-center justify-between text-sm mt-3">
+        <span class="text-xs text-gray-500">Ruby <%= lesson.ruby_version %></span>
+        <div class="flex items-center space-x-3">
+          <%= link_to t('admin.view'), admin_lesson_path(lesson), class: "text-blue-600 hover:text-blue-800" %>
+          <%= link_to t('admin.edit'), edit_admin_lesson_path(lesson), class: "text-gray-600 hover:text-gray-800" %>
+          <%= button_to t('admin.delete'), admin_lesson_path(lesson), method: :delete,
+              data: { turbo_confirm: t('admin.confirm_delete_lesson') },
+              class: "text-red-600 hover:text-red-800" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <% if @lessons.empty? %>
+    <div class="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+      <%= t('admin.no_lessons_yet') %> <%= link_to t('admin.new_lesson').downcase, new_admin_lesson_path, class: "text-red-600 hover:underline" %>
+    </div>
+  <% end %>
+</div>

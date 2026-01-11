@@ -1,0 +1,103 @@
+<% content_for(:page_title, t('admin.submission_n', id: @submission.id)) %>
+
+<div class="mb-4 sm:mb-6">
+  <%= link_to "← #{t('admin.back_to')} #{t('admin.submissions')}", admin_submissions_path, class: "text-gray-600 hover:text-gray-800 text-sm sm:text-base" %>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+  <!-- Main Content -->
+  <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+    <!-- Submitted Code -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-800"><%= t('admin.submitted_code') %></h3>
+      </div>
+      <div class="p-3 sm:p-4">
+        <pre class="bg-gray-900 text-gray-100 p-3 sm:p-4 rounded-lg text-xs sm:text-sm overflow-x-auto"><code><%= @submission.code %></code></pre>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-800"><%= t('admin.result_output') %></h3>
+      </div>
+      <div class="p-3 sm:p-4">
+        <% if @submission.result.present? %>
+          <pre class="bg-gray-100 text-gray-800 p-3 sm:p-4 rounded-lg text-xs sm:text-sm overflow-x-auto whitespace-pre-wrap"><%= @submission.result %></pre>
+        <% else %>
+          <p class="text-gray-500 italic text-sm"><%= t('admin.no_output') %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Expected Solution (mobile only) -->
+    <div class="bg-white rounded-lg shadow p-4 sm:p-6 lg:hidden">
+      <h3 class="text-base font-semibold text-gray-800 mb-3"><%= t('admin.expected_solution') %></h3>
+      <pre class="bg-gray-900 text-gray-100 p-3 rounded-lg text-xs overflow-x-auto"><code><%= @submission.exercise.solution_code %></code></pre>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="space-y-4 sm:space-y-6">
+    <!-- Details -->
+    <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+      <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4"><%= t('admin.details') %></h3>
+
+      <dl class="space-y-3 sm:space-y-4">
+        <div>
+          <dt class="text-xs sm:text-sm text-gray-500"><%= t('admin.status') %></dt>
+          <dd class="mt-1">
+            <% if @submission.passed %>
+              <span class="inline-flex px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold rounded-full bg-green-100 text-green-800">
+                <%= t('admin.passed') %>
+              </span>
+            <% else %>
+              <span class="inline-flex px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold rounded-full bg-red-100 text-red-800">
+                <%= t('admin.failed') %>
+              </span>
+            <% end %>
+          </dd>
+        </div>
+
+        <div>
+          <dt class="text-xs sm:text-sm text-gray-500"><%= t('admin.user') %></dt>
+          <dd class="mt-1">
+            <%= link_to @submission.user.username, admin_user_path(@submission.user), class: "text-blue-600 hover:underline font-medium text-sm sm:text-base" %>
+          </dd>
+        </div>
+
+        <div>
+          <dt class="text-xs sm:text-sm text-gray-500"><%= t('admin.exercise') %></dt>
+          <dd class="mt-1">
+            <%= link_to @submission.exercise.title, admin_exercise_path(@submission.exercise), class: "text-blue-600 hover:underline text-sm sm:text-base" %>
+          </dd>
+        </div>
+
+        <div>
+          <dt class="text-xs sm:text-sm text-gray-500"><%= t('admin.execution_time') %></dt>
+          <dd class="mt-1 font-medium text-gray-800 text-sm sm:text-base">
+            <% if @submission.execution_time %>
+              <%= (@submission.execution_time * 1000).round %>ms
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        </div>
+
+        <div>
+          <dt class="text-xs sm:text-sm text-gray-500"><%= t('admin.submitted') %></dt>
+          <dd class="mt-1 text-gray-800 text-sm sm:text-base">
+            <%= l(@submission.created_at, format: :with_time) %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Exercise Reference (desktop only) -->
+    <div class="bg-white rounded-lg shadow p-4 sm:p-6 hidden lg:block">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4"><%= t('admin.expected_solution') %></h3>
+      <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg text-xs overflow-x-auto"><code><%= @submission.exercise.solution_code %></code></pre>
+    </div>
+  </div>
+</div>

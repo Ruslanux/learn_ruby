@@ -1,0 +1,164 @@
+<div class="max-w-4xl mx-auto">
+  <div class="mb-6 sm:mb-8 text-center">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2"><%= t('leaderboard.title') %></h1>
+    <p class="text-gray-600 text-sm sm:text-base"><%= t('leaderboard.top_learners') %></p>
+  </div>
+
+  <% if user_signed_in? && @current_user_rank %>
+    <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3 sm:space-x-4">
+          <div class="bg-white/20 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center text-lg sm:text-2xl font-bold flex-shrink-0">
+            #<%= @current_user_rank %>
+          </div>
+          <div class="min-w-0">
+            <div class="text-base sm:text-xl font-semibold truncate"><%= current_user.username %></div>
+            <div class="text-red-100 text-sm"><%= t('leaderboard.level') %> <%= current_user.level %></div>
+          </div>
+        </div>
+        <div class="text-right flex-shrink-0">
+          <div class="text-2xl sm:text-3xl font-bold"><%= number_with_delimiter(current_user.total_points) %></div>
+          <div class="text-red-100 text-sm"><%= t('leaderboard.points').downcase %></div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Desktop Table -->
+  <div class="bg-white rounded-xl shadow-md overflow-hidden hidden sm:block">
+    <table class="w-full">
+      <thead class="bg-gray-50 border-b">
+        <tr>
+          <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-sm font-semibold text-gray-600"><%= t('leaderboard.rank') %></th>
+          <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-sm font-semibold text-gray-600"><%= t('leaderboard.user') %></th>
+          <th class="px-4 sm:px-6 py-3 sm:py-4 text-center text-sm font-semibold text-gray-600"><%= t('leaderboard.level') %></th>
+          <th class="px-4 sm:px-6 py-3 sm:py-4 text-center text-sm font-semibold text-gray-600"><%= t('leaderboard.streak') %></th>
+          <th class="px-4 sm:px-6 py-3 sm:py-4 text-right text-sm font-semibold text-gray-600"><%= t('leaderboard.points') %></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% @users.each_with_index do |user, index| %>
+          <% rank = index + 1 %>
+          <tr class="<%= 'bg-yellow-50' if user_signed_in? && user.id == current_user.id %> hover:bg-gray-50 transition">
+            <td class="px-4 sm:px-6 py-3 sm:py-4">
+              <% if rank == 1 %>
+                <span class="text-xl sm:text-2xl">🥇</span>
+              <% elsif rank == 2 %>
+                <span class="text-xl sm:text-2xl">🥈</span>
+              <% elsif rank == 3 %>
+                <span class="text-xl sm:text-2xl">🥉</span>
+              <% else %>
+                <span class="text-gray-500 font-medium">#<%= rank %></span>
+              <% end %>
+            </td>
+            <td class="px-4 sm:px-6 py-3 sm:py-4">
+              <div class="flex items-center space-x-3">
+                <div class="bg-red-100 text-red-600 rounded-full w-10 h-10 flex items-center justify-center font-semibold flex-shrink-0">
+                  <%= user.username[0].upcase %>
+                </div>
+                <div class="min-w-0">
+                  <div class="font-medium text-gray-800 truncate"><%= user.username %></div>
+                  <% if user_signed_in? && user.id == current_user.id %>
+                    <span class="text-xs text-red-600"><%= t('leaderboard.you') %></span>
+                  <% end %>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 sm:px-6 py-3 sm:py-4 text-center">
+              <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                Lvl <%= user.level %>
+              </span>
+            </td>
+            <td class="px-4 sm:px-6 py-3 sm:py-4 text-center">
+              <% if user.current_streak > 0 %>
+                <span class="inline-flex items-center text-orange-600">
+                  🔥 <%= user.current_streak %>
+                </span>
+              <% else %>
+                <span class="text-gray-400">-</span>
+              <% end %>
+            </td>
+            <td class="px-4 sm:px-6 py-3 sm:py-4 text-right">
+              <span class="font-semibold text-gray-800"><%= number_with_delimiter(user.total_points) %></span>
+              <span class="text-gray-500 text-sm">pts</span>
+            </td>
+          </tr>
+        <% end %>
+
+        <% if @users.empty? %>
+          <tr>
+            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+              <div class="text-4xl mb-2">🏆</div>
+              <p><%= t('leaderboard.empty') %></p>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile List -->
+  <div class="bg-white rounded-xl shadow-md overflow-hidden sm:hidden">
+    <% if @users.any? %>
+      <div class="divide-y divide-gray-100">
+        <% @users.each_with_index do |user, index| %>
+          <% rank = index + 1 %>
+          <div class="flex items-center p-3 <%= 'bg-yellow-50' if user_signed_in? && user.id == current_user.id %>">
+            <!-- Rank -->
+            <div class="w-10 flex-shrink-0 text-center">
+              <% if rank == 1 %>
+                <span class="text-xl">🥇</span>
+              <% elsif rank == 2 %>
+                <span class="text-xl">🥈</span>
+              <% elsif rank == 3 %>
+                <span class="text-xl">🥉</span>
+              <% else %>
+                <span class="text-gray-500 font-medium text-sm">#<%= rank %></span>
+              <% end %>
+            </div>
+
+            <!-- Avatar -->
+            <div class="bg-red-100 text-red-600 rounded-full w-9 h-9 flex items-center justify-center font-semibold text-sm flex-shrink-0 ml-2">
+              <%= user.username[0].upcase %>
+            </div>
+
+            <!-- User Info -->
+            <div class="ml-3 flex-grow min-w-0">
+              <div class="font-medium text-gray-800 text-sm truncate">
+                <%= user.username %>
+                <% if user_signed_in? && user.id == current_user.id %>
+                  <span class="text-red-600 text-xs"><%= t('leaderboard.you') %></span>
+                <% end %>
+              </div>
+              <div class="text-xs text-gray-500">
+                Lvl <%= user.level %>
+                <% if user.current_streak > 0 %>
+                  <span class="ml-1 text-orange-600">🔥 <%= user.current_streak %></span>
+                <% end %>
+              </div>
+            </div>
+
+            <!-- Points -->
+            <div class="text-right flex-shrink-0">
+              <div class="font-semibold text-gray-800 text-sm"><%= number_with_delimiter(user.total_points) %></div>
+              <div class="text-xs text-gray-500">pts</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="px-6 py-12 text-center text-gray-500">
+        <div class="text-4xl mb-2">🏆</div>
+        <p><%= t('leaderboard.empty') %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <% unless user_signed_in? %>
+    <div class="mt-6 sm:mt-8 text-center">
+      <p class="text-gray-600 mb-4 text-sm sm:text-base"><%= t('leaderboard.want_to_join', default: 'Want to join the leaderboard?') %></p>
+      <%= link_to t('nav.sign_up'), new_user_registration_path,
+                  class: "inline-block bg-red-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-red-700 transition text-sm sm:text-base" %>
+    </div>
+  <% end %>
+</div>

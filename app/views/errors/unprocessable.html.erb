@@ -1,0 +1,19 @@
+<% content_for(:title) { "422 - #{t('errors.forbidden')}" } %>
+
+<div class="min-h-[60vh] flex items-center justify-center">
+  <div class="text-center">
+    <div class="mb-8">
+      <span class="text-9xl font-bold text-red-600">422</span>
+    </div>
+    <h1 class="text-4xl font-bold text-gray-800 mb-4">
+      <%= t('errors.forbidden') %>
+    </h1>
+    <p class="text-xl text-gray-600 mb-8">
+      <%= t('errors.forbidden_message') %>
+    </p>
+    <div class="space-x-4">
+      <%= link_to t('errors.go_home'), root_path, class: "inline-block bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition font-medium" %>
+      <%= link_to t('errors.go_back'), "javascript:history.back()", class: "inline-block bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition font-medium" %>
+    </div>
+  </div>
+</div>

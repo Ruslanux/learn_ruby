@@ -1,0 +1,519 @@
+ru:
+  # Application
+  app_name: "LearnRuby"
+  tagline: "Изучайте Ruby 3.4 с интерактивными упражнениями"
+
+  # Navigation
+  nav:
+    home: "Главная"
+    lessons: "Уроки"
+    leaderboard: "Рейтинг"
+    profile: "Профиль"
+    admin: "Админ"
+    sign_in: "Войти"
+    sign_out: "Выйти"
+    sign_up: "Регистрация"
+    level_short: "Ур."
+    points_short: "очк."
+    language: "Язык"
+
+  # Common
+  common:
+    back: "Назад"
+    save: "Сохранить"
+    cancel: "Отмена"
+    delete: "Удалить"
+    edit: "Редактировать"
+    create: "Создать"
+    update: "Обновить"
+    search: "Поиск"
+    loading: "Загрузка..."
+    success: "Успешно!"
+    error: "Ошибка"
+    warning: "Внимание"
+    confirm_delete: "Вы уверены, что хотите удалить это?"
+    no_results: "Ничего не найдено"
+    view_all: "Смотреть все"
+    close: "Закрыть"
+    ago: "назад"
+
+  # Home page
+  home:
+    title: "Изучайте Ruby 3.4"
+    subtitle: "Осваивайте Ruby через интерактивные упражнения в стиле test-first"
+    get_started: "Начать"
+    sign_in: "Войти"
+    features:
+      modules: "4 учебных модуля"
+      modules_desc: "От основ до современных возможностей Ruby 3.4, включая pattern matching и новый параметр 'it'"
+      test_first: "Test-First обучение"
+      test_first_desc: "Пишите код, который проходит RSpec тесты - так же, как работают профессиональные Ruby-разработчики"
+      progress: "Отслеживание прогресса"
+      progress_desc: "Зарабатывайте баллы, повышайте уровень и открывайте достижения по мере освоения Ruby"
+    course_modules: "Модули курса"
+    modules:
+      basics: "Основы Ruby"
+      basics_desc: "Функции, классы, массивы и строки"
+      data: "Работа с данными"
+      data_desc: "Манипуляция строками, хеши и форматирование"
+      advanced: "Продвинутые концепции"
+      advanced_desc: "Блоки, метапрограммирование и алгоритмы"
+      modern: "Возможности Ruby 3.4"
+      modern_desc: "Pattern matching, параметр 'it', Data-классы, Ractors"
+
+  # Lessons
+  lessons:
+    title: "Путь обучения"
+    subtitle: "Осваивайте Ruby 3.4 через интерактивные упражнения"
+    all_lessons: "Все уроки"
+    back_to_lessons: "Назад ко всем урокам"
+    module: "Модуль %{number}"
+    exercises_count:
+      one: "%{count} упражнение"
+      few: "%{count} упражнения"
+      many: "%{count} упражнений"
+      other: "%{count} упражнений"
+    exercises: "упражнений"
+    progress: "Прогресс"
+    progress_percent: "%{percent}% выполнено"
+    your_progress: "Ваш прогресс"
+    difficulty:
+      beginner: "Начинающий"
+      intermediate: "Средний"
+      advanced: "Продвинутый"
+      modern: "Современный Ruby"
+    start: "Начать обучение"
+    continue: "Продолжить обучение"
+    review: "Повторить упражнения"
+    completed: "Выполнено"
+    not_started: "Не начато"
+    in_progress: "В процессе"
+    no_lessons: "Пока нет доступных уроков"
+    check_back: "Заходите позже за новым контентом!"
+    lesson_info: "Информация об уроке"
+    total_points: "Всего баллов"
+    ruby_version: "Версия Ruby"
+    sign_in_to_start: "Войдите, чтобы начать"
+    no_exercises: "Пока нет упражнений для этого урока."
+
+  # Exercises
+  exercises:
+    title: "Упражнение"
+    instructions: "Инструкции"
+    hints: "Подсказки"
+    show_hints: "Показать подсказки"
+    hide_hints: "Скрыть подсказки"
+    hint: "Подсказка %{number}"
+    starter_code: "Начальный код"
+    your_code: "Ваш код"
+    tests: "Тесты"
+    run_tests: "Запустить тесты"
+    submit: "Отправить решение"
+    reset_code: "Сбросить код"
+    previous: "Предыдущее"
+    next: "Следующее"
+    attempts: "Попытки"
+    time_elapsed: "Время"
+    points: "Баллы"
+    topics: "Темы"
+    sign_in_to_submit: "Войдите, чтобы отправить"
+    waiting_for_tests: "Ожидание тестов..."
+    click_run_tests: "Нажмите \"Запустить тесты\", чтобы увидеть результаты"
+    complete_lesson: "Завершить урок"
+    results:
+      title: "Результаты"
+      passed: "Все тесты пройдены!"
+      failed: "Некоторые тесты не прошли"
+      error: "Ошибка выполнения"
+      output: "Вывод"
+      test_results: "Результаты тестов"
+      execution_time: "Время выполнения: %{time}с"
+    congrats:
+      title: "Поздравляем!"
+      message: "Вы заработали %{points} баллов!"
+
+  # Profile
+  profile:
+    title: "Профиль"
+    stats: "Статистика"
+    level: "Уровень"
+    points: "Баллы"
+    streak: "Серия"
+    current_streak: "Текущая серия"
+    longest_streak: "Лучшая серия"
+    exercises_completed: "Выполнено упражнений"
+    total_submissions: "Всего отправок"
+    achievements: "Достижения"
+    no_achievements: "Достижения пока недоступны."
+    not_earned: "Ещё не получено"
+    recent_activity: "Недавняя активность"
+    recent_submissions: "Недавние отправки"
+    completed_exercises: "Выполненные упражнения"
+    no_completed: "Пока нет выполненных упражнений."
+    no_submissions: "Пока нет отправок."
+    start_learning: "Начать обучение"
+    progress: "Прогресс"
+    next_level: "%{points} баллов до уровня %{level}"
+    joined_ago: "Присоединился %{time} назад"
+    rank: "Ранг #%{rank}"
+    days: "дней"
+    no_active_streak: "Нет активной серии"
+    attempts: "попыток"
+
+  # Leaderboard
+  leaderboard:
+    title: "Рейтинг"
+    top_learners: "Лучшие ученики Ruby по баллам"
+    by_points: "По баллам"
+    by_streak: "По серии"
+    rank: "Место"
+    user: "Пользователь"
+    points: "Баллы"
+    streak: "Серия"
+    level: "Уровень"
+    you: "(Вы)"
+    empty: "Пока нет пользователей. Будьте первым!"
+    want_to_join: "Хотите попасть в рейтинг?"
+
+  # Achievements
+  achievements:
+    title: "Достижения"
+    categories:
+      points: "Баллы"
+      exercises: "Упражнения"
+      streak: "Серия"
+      special: "Особые"
+    earned_on: "Получено %{date}"
+    not_earned: "Ещё не получено"
+
+  # Admin
+  admin:
+    title: "Панель администратора"
+    dashboard: "Обзор"
+    lessons: "Уроки"
+    exercises: "Упражнения"
+    submissions: "Отправки"
+    users: "Пользователи"
+    stats:
+      total_users: "Всего пользователей"
+      active_today: "Активных сегодня"
+      total_submissions: "Всего отправок"
+      pass_rate: "Процент успеха"
+      total_lessons: "Всего уроков"
+      total_exercises: "Всего упражнений"
+      content: "Контент"
+      lessons_exercises: "уроков / упражнений"
+      across_all: "по всем отправкам"
+    recent_submissions: "Недавние отправки"
+    popular_exercises: "Популярные упражнения"
+    top_users: "Лучшие пользователи"
+    view_all_submissions: "Смотреть все отправки"
+    # Common actions
+    actions: "Действия"
+    view: "Просмотр"
+    edit: "Редактировать"
+    delete: "Удалить"
+    cancel: "Отмена"
+    save_changes: "Сохранить изменения"
+    new: "Создать"
+    back_to: "Назад к"
+    # Status
+    passed: "Пройден"
+    failed: "Не пройден"
+    pass: "Успех"
+    fail: "Ошибка"
+    # Table headers
+    user: "Пользователь"
+    exercise: "Упражнение"
+    status: "Статус"
+    time: "Время"
+    exec_time: "Время выполнения"
+    submitted: "Отправлено"
+    module: "Модуль"
+    difficulty: "Сложность"
+    ruby: "Ruby"
+    points: "Баллы"
+    level: "Уровень"
+    streak: "Серия"
+    joined: "Регистрация"
+    role: "Роль"
+    # Pagination
+    previous: "Назад"
+    next: "Далее"
+    page_of: "Страница %{page} из %{total}"
+    # Counts
+    lessons_total: "Всего уроков: %{count}"
+    exercises_total: "Всего упражнений: %{count}"
+    submissions_total: "Всего отправок: %{count}"
+    users_total: "Всего пользователей: %{count}"
+    submissions_count: "%{count} отправок"
+    n_exercises: "%{count} упражнений"
+    # Empty states
+    no_submissions_yet: "Пока нет отправок"
+    no_exercises_yet: "Пока нет упражнений"
+    no_users_yet: "Пока нет пользователей"
+    no_lessons_yet: "Пока нет уроков. Создайте первый урок"
+    no_submissions_found: "Отправки не найдены"
+    no_users_found: "Пользователи не найдены"
+    no_achievements_yet: "Пока нет достижений"
+    no_completed_yet: "Пока нет выполненных упражнений"
+    # Filters
+    all: "Все"
+    today: "сегодня"
+    active_today_count: "активных сегодня: %{count}"
+    # Lessons
+    new_lesson: "Новый урок"
+    edit_lesson: "Редактировать урок"
+    create_lesson: "Создать урок"
+    lesson_created: "Урок успешно создан."
+    lesson_updated: "Урок успешно обновлён."
+    lesson_deleted: "Урок успешно удалён."
+    confirm_delete_lesson: "Вы уверены, что хотите удалить этот урок и все его упражнения?"
+    supports_markdown: "Поддерживает форматирование Markdown"
+    # Exercises
+    new_exercise: "Новое упражнение"
+    edit_exercise: "Редактировать упражнение"
+    create_exercise: "Создать упражнение"
+    exercise_created: "Упражнение успешно создано."
+    exercise_updated: "Упражнение успешно обновлено."
+    exercise_deleted: "Упражнение успешно удалено."
+    confirm_delete_exercise: "Вы уверены?"
+    # Users
+    search_placeholder: "Поиск по имени или email..."
+    search: "Поиск"
+    clear: "Очистить"
+    user_details: "Информация о пользователе"
+    account_info: "Данные аккаунта"
+    recent_completions: "Недавние выполнения"
+    last_active: "Последняя активность"
+    never: "Никогда"
+    rank: "Место"
+    completed: "Выполнено"
+    admin_role: "Администратор"
+    user_role: "Пользователь"
+    make_admin: "Сделать админом"
+    revoke_admin: "Отозвать права"
+    confirm_make_admin: "Вы уверены, что хотите дать права администратора пользователю %{username}?"
+    confirm_revoke_admin: "Вы уверены, что хотите отозвать права администратора у пользователя %{username}?"
+    edit_user: "Редактировать пользователя"
+    email_password_note: "Примечание: Email и пароль могут быть изменены только пользователем через настройки аккаунта."
+    errors_prohibited: "%{count} ошибка не позволяет сохранить запись"
+    errors_prohibited_plural: "%{count} ошибок не позволяют сохранить запись"
+    lesson_details: "Информация об уроке"
+    exercise_details: "Информация об упражнении"
+    add_exercise: "Добавить упражнение"
+    position: "Позиция"
+    title: "Название"
+    code: "Код"
+    statistics: "Статистика"
+    completions: "Выполнений"
+    select_lesson: "Выберите урок"
+    step_by_step: "Пошаговые инструкции для упражнения"
+    initial_code: "Начальный код, показываемый пользователю"
+    reference_solution: "Эталонное решение (не показывается пользователям)"
+    test_code_help: "RSpec тесты для проверки решений пользователей"
+    lesson: "Урок"
+    submission: "Отправка"
+    submission_n: "Отправка #%{id}"
+    submitted_code: "Отправленный код"
+    result_output: "Результат выполнения"
+    no_output: "Нет вывода"
+    details: "Подробности"
+    execution_time: "Время выполнения"
+    expected_solution: "Ожидаемое решение"
+    back_to_site: "Вернуться на сайт"
+    logged_in_as: "Вы вошли как"
+
+  # Code execution
+  sandbox:
+    running: "Выполняем ваш код..."
+    timeout: "Превышено время выполнения (максимум 10 секунд)"
+    memory_limit: "Превышен лимит памяти (максимум 128МБ)"
+    forbidden_code: "Обнаружен запрещённый код"
+    syntax_error: "Синтаксическая ошибка в коде"
+
+  # Errors
+  errors:
+    not_found: "Страница не найдена"
+    not_found_message: "Страница, которую вы ищете, не существует."
+    unauthorized: "Не авторизован"
+    unauthorized_message: "Для доступа к этой странице необходимо войти в систему."
+    forbidden: "Доступ запрещён"
+    forbidden_message: "У вас нет прав для доступа к этой странице."
+    internal_error: "Что-то пошло не так"
+    internal_error_message: "Извините, но на нашей стороне произошла ошибка."
+    go_home: "На главную"
+    go_back: "Назад"
+
+  # Time
+  time:
+    formats:
+      short: "%d %b"
+      long: "%d %B %Y"
+      with_time: "%d %B %Y в %H:%M"
+
+  # Date
+  date:
+    formats:
+      short: "%d %b"
+      long: "%d %B %Y"
+    month_names:
+      - ~
+      - Января
+      - Февраля
+      - Марта
+      - Апреля
+      - Мая
+      - Июня
+      - Июля
+      - Августа
+      - Сентября
+      - Октября
+      - Ноября
+      - Декабря
+    abbr_month_names:
+      - ~
+      - Янв
+      - Фев
+      - Мар
+      - Апр
+      - Май
+      - Июн
+      - Июл
+      - Авг
+      - Сен
+      - Окт
+      - Ноя
+      - Дек
+    day_names:
+      - Воскресенье
+      - Понедельник
+      - Вторник
+      - Среда
+      - Четверг
+      - Пятница
+      - Суббота
+    abbr_day_names:
+      - Вс
+      - Пн
+      - Вт
+      - Ср
+      - Чт
+      - Пт
+      - Сб
+
+  # Distance in words (for time_ago_in_words helper)
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        one: "около 1 часа"
+        few: "около %{count} часов"
+        many: "около %{count} часов"
+        other: "около %{count} часов"
+      about_x_months:
+        one: "около 1 месяца"
+        few: "около %{count} месяцев"
+        many: "около %{count} месяцев"
+        other: "около %{count} месяцев"
+      about_x_years:
+        one: "около 1 года"
+        few: "около %{count} лет"
+        many: "около %{count} лет"
+        other: "около %{count} лет"
+      almost_x_years:
+        one: "почти 1 год"
+        few: "почти %{count} года"
+        many: "почти %{count} лет"
+        other: "почти %{count} лет"
+      half_a_minute: "полминуты"
+      less_than_x_seconds:
+        one: "меньше 1 секунды"
+        few: "меньше %{count} секунд"
+        many: "меньше %{count} секунд"
+        other: "меньше %{count} секунд"
+      less_than_x_minutes:
+        one: "меньше минуты"
+        few: "меньше %{count} минут"
+        many: "меньше %{count} минут"
+        other: "меньше %{count} минут"
+      over_x_years:
+        one: "больше 1 года"
+        few: "больше %{count} лет"
+        many: "больше %{count} лет"
+        other: "больше %{count} лет"
+      x_days:
+        one: "1 день"
+        few: "%{count} дня"
+        many: "%{count} дней"
+        other: "%{count} дней"
+      x_minutes:
+        one: "1 минута"
+        few: "%{count} минуты"
+        many: "%{count} минут"
+        other: "%{count} минут"
+      x_months:
+        one: "1 месяц"
+        few: "%{count} месяца"
+        many: "%{count} месяцев"
+        other: "%{count} месяцев"
+      x_years:
+        one: "1 год"
+        few: "%{count} года"
+        many: "%{count} лет"
+        other: "%{count} лет"
+      x_seconds:
+        one: "1 секунда"
+        few: "%{count} секунды"
+        many: "%{count} секунд"
+        other: "%{count} секунд"
+
+  # ActiveRecord
+  activerecord:
+    models:
+      user: "Пользователь"
+      lesson: "Урок"
+      exercise: "Упражнение"
+      code_submission: "Отправка кода"
+      achievement: "Достижение"
+    attributes:
+      user:
+        email: "Email"
+        username: "Имя пользователя"
+        password: "Пароль"
+        password_confirmation: "Подтверждение пароля"
+        level: "Уровень"
+        total_points: "Всего баллов"
+      lesson:
+        title: "Название"
+        description: "Описание"
+        module_number: "Номер модуля"
+        position: "Позиция"
+        difficulty: "Сложность"
+      exercise:
+        title: "Название"
+        description: "Описание"
+        instructions: "Инструкции"
+        hints: "Подсказки"
+        starter_code: "Начальный код"
+        solution_code: "Код решения"
+        test_code: "Тестовый код"
+        points: "Баллы"
+        topics: "Темы"
+
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              taken: "уже занят"
+              blank: "не может быть пустым"
+              invalid: "недействительный формат"
+            username:
+              taken: "уже занято"
+              blank: "не может быть пустым"
+              too_short: "слишком короткое (минимум %{count} символов)"
+            password:
+              blank: "не может быть пустым"
+              too_short: "слишком короткий (минимум %{count} символов)"
+            password_confirmation:
+              confirmation: "не совпадает с паролем"

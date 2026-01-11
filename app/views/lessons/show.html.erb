@@ -1,0 +1,165 @@
+<div class="max-w-6xl mx-auto">
+  <!-- Breadcrumbs -->
+  <nav class="mb-4 sm:mb-6 text-sm">
+    <%= link_to t('nav.lessons'), lessons_path, class: "text-gray-500 hover:text-red-600" %>
+    <span class="text-gray-400 mx-2">/</span>
+    <span class="text-gray-700 truncate"><%= @lesson.translated_title %></span>
+  </nav>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+    <!-- Main Content -->
+    <div class="lg:col-span-2">
+      <!-- Lesson Header -->
+      <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+              <span class="text-xs sm:text-sm text-gray-500">
+                <%= t('lessons.module', number: @lesson.module_number) %>
+              </span>
+              <%= difficulty_badge(@lesson.difficulty) %>
+              <span class="text-xs sm:text-sm text-gray-500 sm:hidden">
+                Ruby <%= @lesson.ruby_version %>
+              </span>
+            </div>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800"><%= @lesson.translated_title %></h1>
+          </div>
+          <div class="hidden sm:block text-right text-sm text-gray-500 flex-shrink-0">
+            Ruby <%= @lesson.ruby_version %>
+          </div>
+        </div>
+
+        <% if @lesson.translated_description.present? %>
+          <div class="prose prose-gray prose-sm sm:prose max-w-none text-gray-600">
+            <%= simple_format(@lesson.translated_description) %>
+          </div>
+        <% end %>
+
+        <% if user_signed_in? %>
+          <% progress = progress_for_lesson(@lesson, @user_progress) %>
+          <div class="mt-4 sm:mt-6 pt-4 border-t">
+            <div class="flex justify-between text-xs sm:text-sm text-gray-600 mb-2">
+              <span><%= t('lessons.your_progress') %></span>
+              <span><%= t('lessons.progress_percent', percent: progress) %></span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-red-500 h-2 rounded-full transition-all duration-300"
+                   style="width: <%= progress %>%"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Exercises List -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="p-3 sm:p-4 bg-gray-50 border-b">
+          <h2 class="font-semibold text-gray-800 text-sm sm:text-base">
+            <%= t('exercises.title') %> (<%= @exercises.count %>)
+          </h2>
+        </div>
+
+        <% if @exercises.empty? %>
+          <div class="p-6 sm:p-8 text-center text-gray-500">
+            <div class="text-3xl sm:text-4xl mb-2">📝</div>
+            <p class="text-sm sm:text-base"><%= t('lessons.no_exercises') %></p>
+          </div>
+        <% else %>
+          <div class="divide-y divide-gray-100">
+            <% @exercises.each_with_index do |exercise, index| %>
+              <%= link_to lesson_exercise_path(@lesson, exercise),
+                          class: "flex items-center p-3 sm:p-4 hover:bg-gray-50 transition group border-l-4 #{exercise_status_class(exercise, @user_progress)}" do %>
+                <div class="flex-shrink-0 mr-3 sm:mr-4">
+                  <%= exercise_status_icon(exercise, @user_progress) %>
+                </div>
+                <div class="flex-grow min-w-0">
+                  <div class="flex items-center">
+                    <span class="text-gray-400 text-xs sm:text-sm mr-1 sm:mr-2"><%= index + 1 %>.</span>
+                    <h3 class="font-medium text-gray-800 group-hover:text-red-600 transition text-sm sm:text-base truncate">
+                      <%= exercise.translated_title %>
+                    </h3>
+                  </div>
+                  <% if exercise.translated_description.present? %>
+                    <p class="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-1 hidden sm:block">
+                      <%= truncate(exercise.translated_description.gsub(/[#*`]/, ''), length: 100) %>
+                    </p>
+                  <% end %>
+                  <div class="flex flex-wrap items-center gap-2 mt-1 sm:mt-2">
+                    <span class="text-xs text-gray-400">
+                      <%= exercise.points %> <%= t('exercises.points').downcase %>
+                    </span>
+                    <% if exercise.topics.present? %>
+                      <% exercise.topics.first(2).each do |topic| %>
+                        <span class="text-xs bg-gray-100 text-gray-600 px-1.5 sm:px-2 py-0.5 rounded hidden sm:inline">
+                          <%= topic %>
+                        </span>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="flex-shrink-0 text-gray-400 group-hover:text-red-500 transition ml-2">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="lg:col-span-1">
+      <!-- Quick Stats -->
+      <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+        <h3 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base"><%= t('lessons.lesson_info') %></h3>
+        <dl class="space-y-2 sm:space-y-3 text-sm">
+          <div class="flex justify-between items-center gap-2">
+            <dt class="text-gray-500"><%= t('lessons.difficulty.beginner', default: 'Difficulty') %></dt>
+            <dd><%= difficulty_badge(@lesson.difficulty) %></dd>
+          </div>
+          <div class="flex justify-between items-center gap-2">
+            <dt class="text-gray-500"><%= t('exercises.title') %></dt>
+            <dd class="font-medium"><%= @exercises.count %></dd>
+          </div>
+          <div class="flex justify-between items-center gap-2">
+            <dt class="text-gray-500"><%= t('lessons.total_points') %></dt>
+            <dd class="font-medium"><%= @exercises.sum(&:points) %></dd>
+          </div>
+          <div class="flex justify-between items-center gap-2">
+            <dt class="text-gray-500"><%= t('lessons.ruby_version') %></dt>
+            <dd class="font-medium"><%= @lesson.ruby_version %></dd>
+          </div>
+        </dl>
+      </div>
+
+      <% if user_signed_in? && @exercises.any? %>
+        <!-- Start/Continue Button -->
+        <% first_incomplete = @exercises.find { |e| !@user_progress[e.id]&.completed? } || @exercises.first %>
+        <%= link_to lesson_exercise_path(@lesson, first_incomplete),
+                    class: "block w-full bg-red-600 text-white text-center py-2.5 sm:py-3 px-4 rounded-xl font-semibold hover:bg-red-700 transition text-sm sm:text-base" do %>
+          <% if progress_for_lesson(@lesson, @user_progress) == 0 %>
+            <%= t('lessons.start') %>
+          <% elsif progress_for_lesson(@lesson, @user_progress) == 100 %>
+            <%= t('lessons.review') %>
+          <% else %>
+            <%= t('lessons.continue') %>
+          <% end %>
+        <% end %>
+      <% elsif !user_signed_in? %>
+        <%= link_to t('lessons.sign_in_to_start'), new_user_session_path,
+                    class: "block w-full bg-red-600 text-white text-center py-2.5 sm:py-3 px-4 rounded-xl font-semibold hover:bg-red-700 transition text-sm sm:text-base" %>
+      <% end %>
+
+      <!-- Back to Lessons -->
+      <div class="mt-4">
+        <%= link_to lessons_path, class: "flex items-center text-gray-500 hover:text-red-600 transition text-sm" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          <%= t('lessons.back_to_lessons') %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

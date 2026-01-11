@@ -1,0 +1,232 @@
+<% content_for :title, "#{@exercise.translated_title} | #{@lesson.translated_title}" %>
+<% content_for :hide_footer, true %>
+
+<% content_for :head do %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/ruby/ruby.min.js"></script>
+  <style>
+    .CodeMirror {
+      height: 100%;
+      font-size: 14px;
+      font-family: 'Fira Code', 'Monaco', 'Menlo', monospace;
+    }
+    @media (max-width: 640px) {
+      .CodeMirror {
+        font-size: 13px;
+      }
+    }
+  </style>
+<% end %>
+
+<div class="lg:h-[calc(100vh-10rem)]"
+     data-controller="code-editor test-runner timer collapsible"
+     data-code-editor-initial-code-value="<%= Base64.strict_encode64(@initial_code || '') %>"
+     data-test-runner-run-url-value="<%= run_lesson_exercise_path(@lesson, @exercise) %>"
+     data-test-runner-submit-url-value="<%= submit_lesson_exercise_path(@lesson, @exercise) %>">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-2 sm:gap-3">
+    <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+      <%= link_to lesson_path(@lesson), class: "flex-shrink-0 text-gray-500 hover:text-red-600 transition p-1" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+      <div class="min-w-0">
+        <div class="text-xs text-gray-500 truncate">
+          <%= @lesson.translated_title %> &bull; <%= t('exercises.title') %> <%= @exercise.position %>/<%= @lesson.exercises.count %>
+        </div>
+        <h1 class="text-base sm:text-xl font-bold text-gray-800 truncate"><%= @exercise.translated_title %></h1>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-3 text-sm">
+      <!-- Timer -->
+      <div class="flex items-center space-x-1 text-gray-600" data-timer-target="display">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span data-timer-target="time">00:00</span>
+      </div>
+
+      <!-- Attempts -->
+      <div class="flex items-center space-x-1 text-gray-600">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        <span data-test-runner-target="attempts">
+          <%= @user_progress&.attempts || 0 %>
+        </span>
+      </div>
+
+      <!-- Points -->
+      <div class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs font-medium">
+        <%= @exercise.points %> <%= t('exercises.points').downcase %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:h-[calc(100%-3.5rem)]">
+    <!-- Left Panel: Instructions & Tests -->
+    <div class="flex flex-col space-y-3 sm:space-y-4 overflow-hidden">
+      <!-- Instructions -->
+      <div class="bg-white rounded-xl shadow-md flex-1 overflow-hidden flex flex-col min-h-[150px] sm:min-h-[200px] lg:min-h-0">
+        <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between">
+          <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.instructions') %></h2>
+          <% if @exercise.translated_hints.present? && @exercise.translated_hints.any? %>
+            <button type="button"
+                    data-action="click->code-editor#toggleHints"
+                    class="text-xs text-red-600 hover:text-red-700 transition"
+                    data-show-text="<%= t('exercises.show_hints') %>"
+                    data-hide-text="<%= t('exercises.hide_hints') %>">
+              <%= t('exercises.show_hints') %>
+            </button>
+          <% end %>
+        </div>
+        <div class="p-3 overflow-y-auto flex-1 prose prose-sm max-w-none text-sm">
+          <%= render_markdown(@exercise.translated_instructions) %>
+
+          <% if @exercise.translated_hints.present? && @exercise.translated_hints.any? %>
+            <div data-code-editor-target="hints" class="hidden mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+              <h4 class="text-yellow-800 font-medium mb-2 text-xs"><%= t('exercises.hints') %>:</h4>
+              <ul class="list-disc list-inside text-yellow-700 space-y-1 text-xs">
+                <% @exercise.translated_hints.each do |hint| %>
+                  <li><%= hint %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Tests Preview (Collapsible on mobile) -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <button type="button"
+                class="w-full px-3 py-2 bg-gray-50 border-b flex items-center justify-between lg:cursor-default"
+                data-action="click->collapsible#toggle"
+                data-collapsible-target="button">
+          <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.tests') %> (RSpec)</h2>
+          <svg class="w-4 h-4 text-gray-500 lg:hidden transition-transform" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="hidden lg:block max-h-[120px] sm:max-h-[150px] lg:max-h-[200px]" data-collapsible-target="content">
+          <div class="p-3 overflow-y-auto bg-gray-900 text-gray-100 font-mono text-xs max-h-[120px] sm:max-h-[150px] lg:max-h-[200px]">
+            <pre class="whitespace-pre-wrap"><%= @exercise.test_code %></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Editor & Results -->
+    <div class="flex flex-col space-y-3 sm:space-y-4 overflow-hidden">
+      <!-- Code Editor -->
+      <div class="bg-white rounded-xl shadow-md flex-1 overflow-hidden flex flex-col min-h-[200px] sm:min-h-[280px] lg:min-h-0">
+        <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between">
+          <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.your_code') %></h2>
+          <button type="button"
+                  data-action="click->code-editor#reset"
+                  class="text-xs text-gray-500 hover:text-gray-700 transition">
+            <%= t('exercises.reset_code') %>
+          </button>
+        </div>
+        <div class="flex-1 overflow-hidden" data-code-editor-target="editor">
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex space-x-2 sm:space-x-3">
+        <button type="button"
+                data-action="click->test-runner#run"
+                data-test-runner-target="runButton"
+                class="flex-1 bg-gray-600 text-white py-2.5 sm:py-3 px-3 rounded-xl font-semibold hover:bg-gray-700 transition flex items-center justify-center space-x-1.5 text-sm">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span><%= t('exercises.run_tests') %></span>
+        </button>
+
+        <% if user_signed_in? %>
+          <button type="button"
+                  data-action="click->test-runner#submit"
+                  data-test-runner-target="submitButton"
+                  class="flex-1 bg-red-600 text-white py-2.5 sm:py-3 px-3 rounded-xl font-semibold hover:bg-red-700 transition flex items-center justify-center space-x-1.5 text-sm">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span><%= t('exercises.submit') %></span>
+          </button>
+        <% else %>
+          <%= link_to new_user_session_path,
+                      class: "flex-1 bg-red-600 text-white py-2.5 sm:py-3 px-3 rounded-xl font-semibold hover:bg-red-700 transition flex items-center justify-center space-x-1.5 text-sm" do %>
+            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+            </svg>
+            <span class="hidden sm:inline"><%= t('exercises.sign_in_to_submit') %></span>
+            <span class="sm:hidden"><%= t('nav.sign_in') %></span>
+          <% end %>
+        <% end %>
+      </div>
+
+      <!-- Results Panel -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="px-3 py-2 border-b flex items-center justify-between"
+             data-test-runner-target="resultsHeader">
+          <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.results.title') %></h2>
+          <span data-test-runner-target="resultsStatus" class="text-xs text-gray-500">
+            <%= t('exercises.waiting_for_tests') %>
+          </span>
+        </div>
+        <div class="p-3 overflow-y-auto font-mono text-xs max-h-[150px] sm:max-h-[200px] lg:max-h-[250px]"
+             data-test-runner-target="resultsBody">
+          <div class="text-gray-500 text-center py-4 sm:py-6 text-sm">
+            <%= t('exercises.click_run_tests') %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="mt-3 sm:mt-4 py-2 px-3 bg-white rounded-xl shadow-md flex justify-between items-center">
+    <% previous_exercise = @lesson.exercises.where("position < ?", @exercise.position).order(position: :desc).first %>
+    <% if previous_exercise %>
+      <%= link_to lesson_exercise_path(@lesson, previous_exercise),
+                  class: "flex items-center text-gray-600 hover:text-red-600 transition font-medium text-sm p-1" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        <span class="hidden sm:inline ml-1"><%= t('exercises.previous') %>: <%= previous_exercise.translated_title %></span>
+      <% end %>
+    <% else %>
+      <div class="w-5"></div>
+    <% end %>
+
+    <span class="text-xs text-gray-500">
+      <%= @exercise.position %> / <%= @lesson.exercises.count %>
+    </span>
+
+    <% next_exercise = @lesson.exercises.where("position > ?", @exercise.position).order(position: :asc).first %>
+    <% if next_exercise %>
+      <%= link_to lesson_exercise_path(@lesson, next_exercise),
+                  class: "flex items-center text-gray-600 hover:text-red-600 transition font-medium text-sm p-1" do %>
+        <span class="hidden sm:inline mr-1"><%= t('exercises.next') %>: <%= next_exercise.translated_title %></span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      <% end %>
+    <% else %>
+      <%= link_to lesson_path(@lesson),
+                  class: "flex items-center text-green-600 hover:text-green-700 transition font-medium text-sm p-1" do %>
+        <span class="hidden sm:inline mr-1"><%= t('exercises.complete_lesson') %></span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+      <% end %>
+    <% end %>
+  </div>
+</div>

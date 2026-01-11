@@ -1,0 +1,76 @@
+<div class="max-w-4xl mx-auto">
+  <div class="text-center py-8 sm:py-12">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-800 mb-4"><%= t('home.title') %></h1>
+    <p class="text-base sm:text-xl text-gray-600 mb-6 sm:mb-8 px-4">
+      <%= t('home.subtitle') %>
+    </p>
+
+    <% unless user_signed_in? %>
+      <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4">
+        <%= link_to t('home.get_started'), new_user_registration_path, class: "bg-red-600 text-white px-6 sm:px-8 py-3 rounded-lg text-base sm:text-lg font-semibold hover:bg-red-700 transition" %>
+        <%= link_to t('home.sign_in'), new_user_session_path, class: "border border-red-600 text-red-600 px-6 sm:px-8 py-3 rounded-lg text-base sm:text-lg font-semibold hover:bg-red-50 transition" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8 mt-8 sm:mt-12">
+    <div class="bg-white p-4 sm:p-6 rounded-xl shadow-md">
+      <div class="text-3xl sm:text-4xl mb-3 sm:mb-4">📚</div>
+      <h3 class="text-lg sm:text-xl font-semibold mb-2"><%= t('home.features.modules') %></h3>
+      <p class="text-gray-600 text-sm sm:text-base"><%= t('home.features.modules_desc') %></p>
+    </div>
+
+    <div class="bg-white p-4 sm:p-6 rounded-xl shadow-md">
+      <div class="text-3xl sm:text-4xl mb-3 sm:mb-4">🧪</div>
+      <h3 class="text-lg sm:text-xl font-semibold mb-2"><%= t('home.features.test_first') %></h3>
+      <p class="text-gray-600 text-sm sm:text-base"><%= t('home.features.test_first_desc') %></p>
+    </div>
+
+    <div class="bg-white p-4 sm:p-6 rounded-xl shadow-md sm:col-span-2 md:col-span-1">
+      <div class="text-3xl sm:text-4xl mb-3 sm:mb-4">🏆</div>
+      <h3 class="text-lg sm:text-xl font-semibold mb-2"><%= t('home.features.progress') %></h3>
+      <p class="text-gray-600 text-sm sm:text-base"><%= t('home.features.progress_desc') %></p>
+    </div>
+  </div>
+
+  <div class="mt-10 sm:mt-16 bg-white rounded-xl shadow-md p-4 sm:p-8">
+    <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6"><%= t('home.course_modules') %></h2>
+    <div class="space-y-3 sm:space-y-4">
+      <div class="flex items-start sm:items-center p-3 sm:p-4 bg-green-50 rounded-lg gap-3">
+        <span class="text-xl sm:text-2xl flex-shrink-0">1️⃣</span>
+        <div class="min-w-0 flex-grow">
+          <h4 class="font-semibold text-sm sm:text-base"><%= t('home.modules.basics') %></h4>
+          <p class="text-gray-600 text-xs sm:text-sm"><%= t('home.modules.basics_desc') %></p>
+        </div>
+        <span class="flex-shrink-0 px-2 sm:px-3 py-1 bg-green-200 text-green-800 rounded-full text-xs sm:text-sm whitespace-nowrap"><%= t('lessons.difficulty.beginner') %></span>
+      </div>
+
+      <div class="flex items-start sm:items-center p-3 sm:p-4 bg-blue-50 rounded-lg gap-3">
+        <span class="text-xl sm:text-2xl flex-shrink-0">2️⃣</span>
+        <div class="min-w-0 flex-grow">
+          <h4 class="font-semibold text-sm sm:text-base"><%= t('home.modules.data') %></h4>
+          <p class="text-gray-600 text-xs sm:text-sm"><%= t('home.modules.data_desc') %></p>
+        </div>
+        <span class="flex-shrink-0 px-2 sm:px-3 py-1 bg-blue-200 text-blue-800 rounded-full text-xs sm:text-sm whitespace-nowrap"><%= t('lessons.difficulty.intermediate') %></span>
+      </div>
+
+      <div class="flex items-start sm:items-center p-3 sm:p-4 bg-purple-50 rounded-lg gap-3">
+        <span class="text-xl sm:text-2xl flex-shrink-0">3️⃣</span>
+        <div class="min-w-0 flex-grow">
+          <h4 class="font-semibold text-sm sm:text-base"><%= t('home.modules.advanced') %></h4>
+          <p class="text-gray-600 text-xs sm:text-sm"><%= t('home.modules.advanced_desc') %></p>
+        </div>
+        <span class="flex-shrink-0 px-2 sm:px-3 py-1 bg-purple-200 text-purple-800 rounded-full text-xs sm:text-sm whitespace-nowrap"><%= t('lessons.difficulty.advanced') %></span>
+      </div>
+
+      <div class="flex items-start sm:items-center p-3 sm:p-4 bg-red-50 rounded-lg gap-3">
+        <span class="text-xl sm:text-2xl flex-shrink-0">4️⃣</span>
+        <div class="min-w-0 flex-grow">
+          <h4 class="font-semibold text-sm sm:text-base"><%= t('home.modules.modern') %></h4>
+          <p class="text-gray-600 text-xs sm:text-sm"><%= t('home.modules.modern_desc') %></p>
+        </div>
+        <span class="flex-shrink-0 px-2 sm:px-3 py-1 bg-red-200 text-red-800 rounded-full text-xs sm:text-sm whitespace-nowrap"><%= t('lessons.difficulty.modern') %></span>
+      </div>
+    </div>
+  </div>
+</div>
