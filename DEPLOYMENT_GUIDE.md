@@ -7,14 +7,13 @@
 1. Обзор архитектуры - схема CI/CD pipeline
 2. Предварительные требования - необходимые инструменты и аккаунты
 3. Настройка Docker Hub - создание аккаунта, токена и репозитория
-4. Регистрация домена - настройка Cloudflare и SSL/TLS
-5. Создание сервера - Hetzner Cloud, SSH-ключи, установка Docker
-6. Настройка PostgreSQL - конфигурация как Docker accessory
-7. Настройка DNS - A-записи в Cloudflare
-8. GitHub Secrets - полный список всех необходимых секретов
-9. CI/CD Pipeline - подробное объяснение структуры workflow
-10. Первый деплой - пошаговая инструкция
-11. Мониторинг и отладка - команды Kamal, SSH, решение типичных проблем
+4. Создание сервера - Hetzner Cloud, SSH-ключи, установка Docker
+5. Настройка PostgreSQL - конфигурация как Docker accessory
+6. GitHub Secrets - полный список всех необходимых секретов
+7. CI/CD Pipeline - подробное объяснение структуры workflow
+8. Первый деплой - пошаговая инструкция
+9. Мониторинг и отладка - команды Kamal, SSH, решение типичных проблем
+10. **Настройка домена и SSL** - переход с IP на доменное имя с HTTPS
 
 ---
 
@@ -112,21 +111,6 @@ kamal version
 
 ---
 
-## Регистрация домена
-
-### Cloudflare
-
-1. Зарегистрируйте или перенесите домен в Cloudflare
-2. Например: `learnruby.ru` или `rubylearning.com`
-
-### Настройки SSL/TLS
-
-1. Перейдите в **SSL/TLS** → **Overview**
-2. Установите режим: **Full** (не Full Strict!)
-   - Это позволяет использовать самоподписанный сертификат Let's Encrypt на сервере
-
----
-
 ## Создание сервера
 
 ### Hetzner Cloud
@@ -210,29 +194,6 @@ accessories:
 
 ---
 
-## Настройка DNS
-
-### Cloudflare DNS Records
-
-Добавьте следующие записи:
-
-| Type | Name | Content | Proxy |
-|------|------|---------|-------|
-| A | @ | YOUR_SERVER_IP | Proxied |
-| A | www | YOUR_SERVER_IP | Proxied |
-
-### Проверка DNS
-
-```bash
-# Проверка A-записи
-dig yourdomain.com +short
-
-# Проверка распространения
-nslookup yourdomain.com
-```
-
----
-
 ## Настройка GitHub Secrets
 
 ### Переход к настройкам
@@ -275,31 +236,33 @@ cat config/master.key
 
 ## Конфигурация deploy.yml
 
-Перед деплоем обновите `config/deploy.yml`:
+### Текущая конфигурация (доступ по IP)
+
+Приложение настроено для доступа по IP-адресу без SSL:
 
 ```yaml
-# Замените на свои значения:
 service: learn-ruby
-image: YOUR_DOCKERHUB_USERNAME/learn-ruby
+image: ruslanux/learn-ruby
 
 servers:
   web:
     hosts:
-      - YOUR_SERVER_IP  # например: 65.108.56.69
+      - 77.42.38.197
 
+# SSL отключен для доступа по IP
 proxy:
-  ssl: true
-  host: YOUR_DOMAIN  # например: learnruby.ru
+  ssl: false
+  host: 77.42.38.197
+  healthcheck:
+    path: /up
+    interval: 3
+    timeout: 5
 
 registry:
-  username: YOUR_DOCKERHUB_USERNAME
-
-accessories:
-  db:
-    host: YOUR_SERVER_IP
-  redis:
-    host: YOUR_SERVER_IP
+  username: ruslanux
 ```
+
+> **Примечание:** Для перехода на доменное имя с SSL см. раздел "Настройка домена и SSL" в конце документа.
 
 ---
 
@@ -515,6 +478,205 @@ User.create!(
 
 ---
 
+## Настройка домена и SSL
+
+Этот раздел описывает процесс перехода с доступа по IP-адресу на доменное имя с HTTPS.
+
+### Шаг 1: Регистрация домена
+
+#### Выбор регистратора
+
+Рекомендуемые варианты:
+- **Cloudflare Registrar** - выгодные цены, интеграция с Cloudflare
+- **Namecheap** - популярный регистратор
+- **REG.RU** - для доменов .ru/.рф
+
+#### Примеры доменов
+
+- `learnruby.ru`
+- `rubylearning.com`
+- `learn-ruby.dev`
+
+### Шаг 2: Настройка Cloudflare
+
+#### 2.1. Добавление домена в Cloudflare
+
+1. Войдите в [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Нажмите **Add a Site**
+3. Введите ваш домен и выберите **Free plan**
+4. Cloudflare покажет NS-серверы для настройки
+
+#### 2.2. Обновление NS-серверов у регистратора
+
+Замените NS-серверы на указанные Cloudflare:
+```
+ns1.cloudflare.com
+ns2.cloudflare.com
+```
+
+> **Примечание:** Обновление DNS может занять до 24 часов.
+
+#### 2.3. Создание DNS-записей
+
+В разделе **DNS** → **Records** добавьте:
+
+| Type | Name | Content | Proxy | TTL |
+|------|------|---------|-------|-----|
+| A | @ | 77.42.38.197 | DNS only (серый) | Auto |
+| A | www | 77.42.38.197 | DNS only (серый) | Auto |
+
+> **Важно:** Установите **Proxy status** в "DNS only" (серая иконка облака), чтобы Kamal мог получить SSL-сертификат от Let's Encrypt напрямую.
+
+#### 2.4. Настройка SSL/TLS
+
+1. Перейдите в **SSL/TLS** → **Overview**
+2. Выберите режим: **Full**
+
+```
+Режимы SSL/TLS:
+- Off: Нет шифрования (не рекомендуется)
+- Flexible: HTTPS только между пользователем и Cloudflare
+- Full: HTTPS везде (рекомендуется для Kamal)
+- Full (Strict): Требует действительный сертификат на сервере
+```
+
+### Шаг 3: Проверка DNS
+
+Дождитесь распространения DNS:
+
+```bash
+# Проверка A-записи
+dig yourdomain.com +short
+# Должен показать: 77.42.38.197
+
+# Проверка распространения
+nslookup yourdomain.com
+
+# Проверка через DNS-чекер
+# https://dnschecker.org/
+```
+
+### Шаг 4: Обновление config/deploy.yml
+
+Измените секцию `proxy`:
+
+```yaml
+# Было (доступ по IP):
+proxy:
+  ssl: false
+  host: 77.42.38.197
+  healthcheck:
+    path: /up
+    interval: 3
+    timeout: 5
+
+# Стало (доступ по домену с SSL):
+proxy:
+  ssl: true
+  host: yourdomain.com
+  healthcheck:
+    path: /up
+    interval: 3
+    timeout: 5
+```
+
+### Шаг 5: Обновление Rails конфигурации (опционально)
+
+Если используете `config.force_ssl` и `config.assume_ssl`, они уже настроены в `config/environments/production.rb`:
+
+```ruby
+# Assume all access to the app is happening through a SSL-terminating reverse proxy.
+config.assume_ssl = true
+
+# Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+config.force_ssl = true
+```
+
+### Шаг 6: Деплой с новой конфигурацией
+
+```bash
+# Коммит изменений
+git add config/deploy.yml
+git commit -m "Enable SSL with domain name"
+git push origin main
+```
+
+### Шаг 7: Проверка SSL
+
+После деплоя проверьте:
+
+```bash
+# Health check через HTTPS
+curl -I https://yourdomain.com/up
+
+# Проверка редиректа HTTP → HTTPS
+curl -I http://yourdomain.com
+
+# Проверка сертификата
+openssl s_client -connect yourdomain.com:443 -servername yourdomain.com < /dev/null 2>/dev/null | openssl x509 -noout -dates
+```
+
+### Шаг 8: Включение Cloudflare Proxy (опционально)
+
+После успешной настройки SSL можно включить Cloudflare Proxy для дополнительной защиты:
+
+1. В **DNS** → **Records** измените **Proxy status** на "Proxied" (оранжевая иконка)
+2. Это добавит:
+   - DDoS-защиту
+   - CDN для статических файлов
+   - Дополнительный уровень SSL
+
+> **Важно:** При включении Proxy убедитесь, что SSL/TLS режим установлен в "Full" или "Full (Strict)".
+
+### Решение проблем с SSL
+
+#### Ошибка "SSL certificate problem"
+
+Kamal не может получить сертификат Let's Encrypt:
+
+```bash
+# Проверьте, что порт 443 открыт
+ssh root@YOUR_SERVER_IP "netstat -tlnp | grep 443"
+
+# Проверьте логи kamal-proxy
+ssh root@YOUR_SERVER_IP "docker logs kamal-proxy"
+```
+
+#### Ошибка "too many redirects"
+
+Возникает при неправильной настройке Cloudflare SSL:
+
+1. Убедитесь, что SSL/TLS режим = "Full"
+2. Проверьте, что `proxy.ssl: true` в deploy.yml
+
+#### Сертификат не обновляется
+
+Let's Encrypt сертификаты действительны 90 дней. Kamal proxy автоматически обновляет их, но если возникли проблемы:
+
+```bash
+# Перезапустите kamal-proxy
+ssh root@YOUR_SERVER_IP "docker restart kamal-proxy"
+
+# Проверьте логи
+ssh root@YOUR_SERVER_IP "docker logs kamal-proxy --tail 50"
+```
+
+### Чек-лист настройки домена и SSL
+
+- [ ] Домен зарегистрирован
+- [ ] Домен добавлен в Cloudflare
+- [ ] NS-серверы обновлены у регистратора
+- [ ] DNS A-записи созданы (@ и www)
+- [ ] DNS распространился (проверить через dig)
+- [ ] SSL/TLS режим = "Full" в Cloudflare
+- [ ] `proxy.ssl: true` в deploy.yml
+- [ ] `proxy.host` обновлён на доменное имя
+- [ ] Деплой выполнен успешно
+- [ ] HTTPS работает (curl -I https://yourdomain.com)
+- [ ] HTTP редиректит на HTTPS
+
+---
+
 ## Контакты и ресурсы
 
 - [Kamal Documentation](https://kamal-deploy.org/)
@@ -522,3 +684,4 @@ User.create!(
 - [Docker Documentation](https://docs.docker.com/)
 - [Hetzner Cloud Documentation](https://docs.hetzner.com/cloud/)
 - [Cloudflare Documentation](https://developers.cloudflare.com/)
+- [Let's Encrypt Documentation](https://letsencrypt.org/docs/)
