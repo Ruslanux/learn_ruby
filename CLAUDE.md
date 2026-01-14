@@ -295,15 +295,20 @@ Module 4: Ruby 3.4 Features (4 lessons, 15 exercises)
   - 3 registrations/hour per IP
 - 239 passing tests
 
-**Phase 8: Deployment Configuration** - ✅ Complete
+**Phase 8: Deployment Configuration** - ✅ Complete & Deployed
 - Docker setup:
   - `Dockerfile` - Rails 8 production image with multi-stage build
   - `docker-compose.yml` - Production services (web, db, redis, sandbox)
   - `docker-compose.dev.yml` - Development services (db, redis only)
   - `docker/sandbox/Dockerfile` - Isolated Ruby sandbox container
+- Kamal 2.x Deployment:
+  - `config/deploy.yml` - Kamal configuration with PostgreSQL and Redis accessories
+  - `.kamal/secrets` - Secret management for GitHub Actions
+  - Single unified CI/CD pipeline in `.github/workflows/ci.yml`
 - GitHub Actions CI/CD:
-  - `.github/workflows/ci.yml` - Test, security scan (Brakeman), JS audit, lint
-  - `.github/workflows/deploy.yml` - Staging (develop) and production (main) deploys
+  - Parallel jobs: test (RSpec), scan_ruby (Brakeman), scan_js (importmap audit), lint (RuboCop)
+  - Deploy job runs after all checks pass on main branch
+  - Auto-deploy to Hetzner Cloud server
 - Environment configuration:
   - `.env.example` - All environment variables documented
   - Rails credentials for production secrets
@@ -311,7 +316,7 @@ Module 4: Ruby 3.4 Features (4 lessons, 15 exercises)
   - Sentry for error tracking (`config/initializers/sentry.rb`)
   - Lograge for structured JSON logging (`config/initializers/lograge.rb`)
 - Rate limiting with Rack::Attack (configured in Phase 7)
-- 239 passing tests
+- 261 passing tests
 
 **Phase 9: Final Polish** - ✅ Complete
 - Background Jobs (Solid Queue):
@@ -336,7 +341,72 @@ Module 4: Ruby 3.4 Features (4 lessons, 15 exercises)
   - `config.exceptions_app = routes` for production
 - 261 passing tests
 
-**Project Complete** - All phases implemented
+**Project Complete** - All phases implemented and deployed to production
+
+---
+
+## Production Deployment
+
+### Live URL
+
+**http://77.42.38.197** (IP-based access, SSL pending domain setup)
+
+### Infrastructure
+
+| Component | Technology | Details |
+|-----------|------------|---------|
+| Hosting | Hetzner Cloud | CX22 (2 vCPU, 4GB RAM), Ubuntu 24.04 |
+| Deployment | Kamal 2.x | Docker-based deployment with kamal-proxy |
+| Database | PostgreSQL 16 | Docker container (learn-ruby-db) |
+| Cache/Queue | Redis 7 | Docker container (learn-ruby-redis) |
+| CI/CD | GitHub Actions | Auto-deploy on push to main |
+| Registry | Docker Hub | ruslanux/learn-ruby |
+
+### GitHub Repository
+
+**https://github.com/Ruslanux/learn_ruby**
+
+### GitHub Secrets Required
+
+| Secret | Description |
+|--------|-------------|
+| `DOCKERHUB_USERNAME` | Docker Hub username |
+| `DOCKERHUB_TOKEN` | Docker Hub access token |
+| `SSH_PRIVATE_KEY` | SSH key for server access |
+| `SERVER_IP` | Production server IP |
+| `RAILS_MASTER_KEY` | Rails credentials key |
+| `DATABASE_PASSWORD` | PostgreSQL password |
+
+### Useful Commands
+
+```bash
+# SSH to server
+ssh root@77.42.38.197
+
+# View running containers
+docker ps
+
+# View app logs
+docker logs learn-ruby-web-<version> -f
+
+# Rails console in production
+docker exec -it learn-ruby-web-<version> bin/rails console
+
+# Run migrations
+docker exec -it learn-ruby-web-<version> bin/rails db:migrate
+
+# Seed database
+docker exec -it learn-ruby-web-<version> bin/rails db:seed
+```
+
+### Future: Domain & SSL Setup
+
+See `DEPLOYMENT_GUIDE.md` section "Настройка домена и SSL" for instructions on:
+- Registering a domain
+- Configuring Cloudflare DNS
+- Enabling SSL with Let's Encrypt via Kamal
+
+---
 
 ## Development Users
 
