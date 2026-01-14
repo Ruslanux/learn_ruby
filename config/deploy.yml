@@ -84,7 +84,7 @@ accessories:
         POSTGRES_DB: learn_ruby_production
         POSTGRES_USER: learn_ruby
       secret:
-        - DATABASE_PASSWORD
+        - POSTGRES_PASSWORD
     directories:
       - data:/var/lib/postgresql/data
 
