@@ -2,19 +2,21 @@ module Api
   module V1
     class LeaderboardController < BaseController
       def index
-        @users = User.order(total_points: :desc, level: :desc)
+        @users = User.where(admin: false)
+                     .order(total_points: :desc, level: :desc)
                      .limit(params[:limit] || 50)
                      .offset(params[:offset] || 0)
 
         render json: {
           leaderboard: @users.map.with_index(1) { |user, rank| leaderboard_entry(user, rank + (params[:offset] || 0).to_i) },
           current_user_rank: current_user.rank,
-          total_users: User.count
+          total_users: User.where(admin: false).count
         }
       end
 
       def streaks
-        @users = User.where("longest_streak > 0")
+        @users = User.where(admin: false)
+                     .where("longest_streak > 0")
                      .order(longest_streak: :desc, current_streak: :desc)
                      .limit(params[:limit] || 50)
 
@@ -54,7 +56,7 @@ module Api
       end
 
       def streak_rank(user)
-        User.where("longest_streak > ?", user.longest_streak).count + 1
+        User.where(admin: false).where("longest_streak > ?", user.longest_streak).count + 1
       end
     end
   end

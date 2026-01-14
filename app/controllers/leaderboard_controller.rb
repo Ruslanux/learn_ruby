@@ -1,6 +1,7 @@
 class LeaderboardController < ApplicationController
   def index
-    @users = User.order(total_points: :desc, level: :desc)
+    @users = User.where(admin: false)
+                 .order(total_points: :desc, level: :desc)
                  .limit(50)
                  .select(:id, :username, :total_points, :level, :current_streak)
 
