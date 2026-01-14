@@ -8,17 +8,14 @@ image: ruslanux/learn-ruby
 servers:
   web:
     hosts:
-      - 192.168.0.1
-    labels:
-      traefik.http.routers.learn-ruby.rule: Host(`learnruby.example.com`)
+      - 77.42.38.197
     options:
       network: kamal
 
-# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
+# Proxy configuration (SSL disabled for IP-based access)
 proxy:
-  ssl: true
-  host: learnruby.example.com
+  ssl: false
+  host: 77.42.38.197
 
 # Credentials for your image host.
 registry:
@@ -78,7 +75,7 @@ builder:
 accessories:
   db:
     image: postgres:16-alpine
-    host: 192.168.0.1
+    host: 77.42.38.197
     port: "127.0.0.1:5432:5432"
     env:
       clear:
@@ -93,7 +90,7 @@ accessories:
 
   redis:
     image: redis:7-alpine
-    host: 192.168.0.1
+    host: 77.42.38.197
     port: "127.0.0.1:6379:6379"
     directories:
       - data:/data
