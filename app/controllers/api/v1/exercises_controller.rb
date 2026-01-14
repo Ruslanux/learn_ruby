@@ -12,7 +12,12 @@ module Api
       end
 
       def run
-        code = params[:code]
+        code = params[:code].to_s
+
+        if code.blank?
+          render json: { error: "No code provided" }, status: :unprocessable_entity
+          return
+        end
 
         result = RubySandboxService.new(
           user_code: code,
@@ -29,7 +34,13 @@ module Api
       end
 
       def submit
-        code = params[:code]
+        code = params[:code].to_s
+
+        if code.blank?
+          render json: { error: "No code provided" }, status: :unprocessable_entity
+          return
+        end
+
         progress = current_user.progress_for(@exercise)
 
         result = RubySandboxService.new(
