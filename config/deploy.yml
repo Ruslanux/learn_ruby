@@ -16,6 +16,10 @@ servers:
 proxy:
   ssl: false
   host: 77.42.38.197
+  healthcheck:
+    path: /up
+    interval: 3
+    timeout: 5
 
 # Credentials for your image host.
 registry:
@@ -97,9 +101,4 @@ accessories:
     options:
       network: kamal
 
-# Health check configuration
-healthcheck:
-  path: /up
-  port: 3000
-  max_attempts: 10
-  interval: 20s
+# Health check is configured via proxy in Kamal 2.x
