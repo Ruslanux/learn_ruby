@@ -1,0 +1,10 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "3df6ad5875810fb1ae912a2a877461ea6f8314fdb090f64c0fa48b5b6f9aacec",
+      "note": "False positive: IMAGE_NAME is a constant, Rails.root paths are safe - no user input involved"
+    }
+  ],
+  "updated": "2026-01-14",
+  "brakeman_version": "7.1.2"
+}
