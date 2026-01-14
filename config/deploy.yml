@@ -34,7 +34,6 @@ env:
   secret:
     - RAILS_MASTER_KEY
     - DATABASE_PASSWORD
-    - SENTRY_DSN
   clear:
     # Database connection
     DB_HOST: learn-ruby-db
