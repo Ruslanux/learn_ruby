@@ -9,8 +9,6 @@ servers:
   web:
     hosts:
       - 77.42.38.197
-    options:
-      network: kamal
 
 # Proxy configuration (SSL disabled for IP-based access)
 proxy:
@@ -89,8 +87,6 @@ accessories:
         - DATABASE_PASSWORD
     directories:
       - data:/var/lib/postgresql/data
-    options:
-      network: kamal
 
   redis:
     image: redis:7-alpine
@@ -98,7 +94,5 @@ accessories:
     port: "127.0.0.1:6379:6379"
     directories:
       - data:/data
-    options:
-      network: kamal
 
 # Health check is configured via proxy in Kamal 2.x

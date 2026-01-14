@@ -149,22 +149,14 @@ jobs:
             kamal deploy
           else
             echo "=== Первый деплой ==="
-            kamal build push
-            kamal accessory boot db || echo "DB already running"
-            kamal accessory boot redis || echo "Redis already running"
+            # Запуск accessories
+            kamal accessory boot db
+            kamal accessory boot redis
 
             # Ждём пока PostgreSQL будет готов
-            sleep 10
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 15
 
-            ssh root@${SERVER_IP} "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/learn-ruby:latest"
-
-            # Создание базы данных и миграции
-            ssh root@${SERVER_IP} "docker run --rm --network kamal \
-              -e DATABASE_URL='postgres://learn_ruby:${DATABASE_PASSWORD}@learn-ruby-db:5432/learn_ruby_production?sslmode=disable' \
-              -e RAILS_MASTER_KEY='${RAILS_MASTER_KEY}' \
-              -e RAILS_ENV=production \
-              -e SOLID_QUEUE_IN_PUMA=false \
-              ${{ secrets.DOCKERHUB_USERNAME }}/learn-ruby:latest bin/rails db:prepare"
-
-            kamal deploy --skip-push
+            # Деплой приложения
+            kamal deploy
           fi
