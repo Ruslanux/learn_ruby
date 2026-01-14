@@ -52,7 +52,7 @@ Rails.application.routes.draw do
     resources :lessons
     resources :exercises
     resources :submissions, only: [ :index, :show ]
-    resources :users, only: [ :index, :show, :edit, :update ] do
+    resources :users, only: [ :index, :show, :edit, :update, :destroy ] do
       member do
         post :toggle_admin
       end

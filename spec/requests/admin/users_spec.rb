@@ -87,4 +87,40 @@ RSpec.describe "Admin::Users", type: :request do
       end
     end
   end
+
+  describe "DELETE /admin/users/:id" do
+    context "with another user" do
+      let!(:user) { create(:user) }
+
+      it "deletes the user" do
+        expect {
+          delete admin_user_path(user)
+        }.to change(User, :count).by(-1)
+      end
+
+      it "redirects to users list" do
+        delete admin_user_path(user)
+        expect(response).to have_http_status(:redirect)
+        expect(response.location).to include("/admin/users")
+      end
+
+      it "shows success message" do
+        delete admin_user_path(user)
+        expect(flash[:notice]).to be_present
+      end
+    end
+
+    context "with self" do
+      it "does not allow deleting own account" do
+        expect {
+          delete admin_user_path(admin)
+        }.not_to change(User, :count)
+      end
+
+      it "shows error message" do
+        delete admin_user_path(admin)
+        expect(flash[:alert]).to be_present
+      end
+    end
+  end
 end

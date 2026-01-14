@@ -1,6 +1,6 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: [:show, :edit, :update, :toggle_admin]
+    before_action :set_user, only: [:show, :edit, :update, :destroy, :toggle_admin]
 
     PER_PAGE = 50
 
@@ -32,6 +32,15 @@ module Admin
         redirect_to admin_user_path(@user), notice: "User was successfully updated."
       else
         render :edit, status: :unprocessable_entity
+      end
+    end
+
+    def destroy
+      if @user == current_user
+        redirect_to admin_users_path, alert: t("admin.cannot_delete_self")
+      else
+        @user.destroy
+        redirect_to admin_users_path, notice: t("admin.user_deleted")
       end
     end
 
