@@ -19,10 +19,7 @@ module Api
           return
         end
 
-        result = RubySandboxService.new(
-          user_code: code,
-          test_code: @exercise.test_code
-        ).execute
+        result = execute_in_sandbox(code)
 
         render json: {
           success: result.success,
@@ -43,10 +40,7 @@ module Api
 
         progress = current_user.progress_for(@exercise)
 
-        result = RubySandboxService.new(
-          user_code: code,
-          test_code: @exercise.test_code
-        ).execute
+        result = execute_in_sandbox(code)
 
         # Record the submission
         submission = current_user.code_submissions.create!(
@@ -98,6 +92,14 @@ module Api
 
       def set_exercise
         @exercise = Exercise.find(params[:id])
+      end
+
+      def execute_in_sandbox(code)
+        sandbox_class = ENV["USE_DOCKER_SANDBOX"] == "true" ? DockerSandboxService : RubySandboxService
+        sandbox_class.new(
+          user_code: code,
+          test_code: @exercise.test_code
+        ).execute
       end
 
       def exercise_json(exercise, progress)

@@ -89,7 +89,8 @@ class ExercisesController < ApplicationController
   end
 
   def execute_code(code)
-    sandbox = RubySandboxService.new(
+    sandbox_class = ENV["USE_DOCKER_SANDBOX"] == "true" ? DockerSandboxService : RubySandboxService
+    sandbox = sandbox_class.new(
       user_code: code,
       test_code: @exercise.test_code
     )
