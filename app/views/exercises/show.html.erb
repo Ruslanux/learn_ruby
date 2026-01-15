@@ -21,7 +21,6 @@
 <% end %>
 
 <div class="lg:h-[calc(100vh-10rem)]"
-     data-turbo="false"
      data-controller="code-editor test-runner timer collapsible"
      data-code-editor-initial-code-value="<%= Base64.strict_encode64(@initial_code || '') %>"
      data-test-runner-run-url-value="<%= run_lesson_exercise_path(@lesson, @exercise) %>"
@@ -124,9 +123,9 @@
 
     <!-- Right Panel: Editor & Results -->
     <div class="flex flex-col space-y-3 sm:space-y-4 overflow-hidden">
-      <!-- Code Editor -->
-      <div class="bg-white rounded-xl shadow-md flex-1 overflow-hidden flex flex-col min-h-[200px] sm:min-h-[280px] lg:min-h-0">
-        <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between">
+      <!-- Code Editor - fixed height, won't shrink -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col h-[200px] sm:h-[250px] lg:h-[300px] flex-shrink-0">
+        <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between flex-shrink-0">
           <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.your_code') %></h2>
           <button type="button"
                   data-action="click->code-editor#reset"
@@ -173,16 +172,16 @@
         <% end %>
       </div>
 
-      <!-- Results Panel -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="px-3 py-2 border-b flex items-center justify-between"
+      <!-- Results Panel - fixed height, scrollable content -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 h-[180px] sm:h-[200px] lg:h-[220px] flex flex-col">
+        <div class="px-3 py-2 border-b flex items-center justify-between flex-shrink-0"
              data-test-runner-target="resultsHeader">
           <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.results.title') %></h2>
           <span data-test-runner-target="resultsStatus" class="text-xs text-gray-500">
             <%= t('exercises.waiting_for_tests') %>
           </span>
         </div>
-        <div class="p-3 overflow-y-auto font-mono text-xs max-h-[150px] sm:max-h-[200px] lg:max-h-[250px]"
+        <div class="p-3 overflow-y-auto font-mono text-xs flex-1"
              data-test-runner-target="resultsBody">
           <div class="text-gray-500 text-center py-4 sm:py-6 text-sm">
             <%= t('exercises.click_run_tests') %>
