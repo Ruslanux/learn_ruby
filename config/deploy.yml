@@ -9,10 +9,6 @@ servers:
   web:
     hosts:
       - 77.42.38.197
-    options:
-      # Mount Docker socket for sandbox container execution
-      volume:
-        - /var/run/docker.sock:/var/run/docker.sock
 
 # Proxy configuration (SSL disabled for IP-based access)
 proxy:
@@ -53,8 +49,8 @@ env:
     # Set number of cores available to the application (adjust based on server)
     WEB_CONCURRENCY: 2
 
-    # Sandbox settings
-    USE_DOCKER_SANDBOX: "true"
+    # Sandbox: process-based (RubySandboxService)
+    # Set USE_DOCKER_SANDBOX=true to use Docker isolation (requires Docker CLI in container)
 
 # Aliases for common commands
 aliases:
