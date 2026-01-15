@@ -160,3 +160,12 @@ jobs:
             # Деплой приложения
             kamal deploy
           fi
+
+      - name: Build sandbox Docker image
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+        run: |
+          echo "=== Building sandbox Docker image on server ==="
+          scp docker/sandbox/Dockerfile root@${SERVER_IP}:/tmp/sandbox_dockerfile
+          ssh root@${SERVER_IP} "cd /tmp && docker build -t learn_ruby_sandbox:latest -f sandbox_dockerfile . && rm sandbox_dockerfile"
+          echo "=== Sandbox image built successfully ==="
