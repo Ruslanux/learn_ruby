@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["editor", "hints"]
+  static targets = ["editor", "hints", "solution", "solutionButton"]
   static values = {
     initialCode: String
   }
@@ -129,6 +129,15 @@ export default class extends Controller {
   toggleHints() {
     if (this.hasHintsTarget) {
       this.hintsTarget.classList.toggle("hidden")
+    }
+  }
+
+  toggleSolution() {
+    if (this.hasSolutionTarget && this.hasSolutionButtonTarget) {
+      const isHidden = this.solutionTarget.classList.toggle("hidden")
+      const showText = this.solutionButtonTarget.dataset.showText
+      const hideText = this.solutionButtonTarget.dataset.hideText
+      this.solutionButtonTarget.textContent = isHidden ? showText : hideText
     }
   }
 
