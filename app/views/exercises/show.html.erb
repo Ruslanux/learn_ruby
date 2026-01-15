@@ -102,10 +102,10 @@
         </div>
       </div>
 
-      <!-- Tests Preview (Collapsible on mobile) -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+      <!-- Tests Preview - fixed height, same as Results panel -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 h-[160px] sm:h-[190px] lg:h-[240px]">
         <button type="button"
-                class="w-full px-3 py-2 bg-gray-50 border-b flex items-center justify-between lg:cursor-default"
+                class="w-full px-3 py-2 bg-gray-50 border-b flex items-center justify-between lg:cursor-default flex-shrink-0"
                 data-action="click->collapsible#toggle"
                 data-collapsible-target="button">
           <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.tests') %> (RSpec)</h2>
@@ -113,8 +113,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
         </button>
-        <div class="hidden lg:block max-h-[120px] sm:max-h-[150px] lg:max-h-[200px]" data-collapsible-target="content">
-          <div class="p-3 overflow-y-auto bg-gray-900 text-gray-100 font-mono text-xs max-h-[120px] sm:max-h-[150px] lg:max-h-[200px]">
+        <div class="hidden lg:block h-[calc(100%-2.5rem)]" data-collapsible-target="content">
+          <div class="p-3 overflow-y-auto bg-gray-900 text-gray-100 font-mono text-xs h-full">
             <pre class="whitespace-pre-wrap"><%= @exercise.test_code %></pre>
           </div>
         </div>
@@ -170,21 +170,19 @@
         </div>
       </div>
 
-      <!-- Results Panel - aligned with Tests panel -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between"
+      <!-- Results Panel - fixed height, same as Tests panel -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 h-[160px] sm:h-[190px] lg:h-[240px]">
+        <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between flex-shrink-0"
              data-test-runner-target="resultsHeader">
           <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.results.title') %></h2>
           <span data-test-runner-target="resultsStatus" class="text-xs text-gray-500">
             <%= t('exercises.waiting_for_tests') %>
           </span>
         </div>
-        <div class="max-h-[120px] sm:max-h-[150px] lg:max-h-[200px]">
-          <div class="p-3 overflow-y-auto bg-gray-900 text-gray-100 font-mono text-xs max-h-[120px] sm:max-h-[150px] lg:max-h-[200px]"
-               data-test-runner-target="resultsBody">
-            <div class="text-gray-400 text-center py-4 text-sm">
-              <%= t('exercises.click_run_tests') %>
-            </div>
+        <div class="h-[calc(100%-2.5rem)] overflow-y-auto bg-gray-900 text-gray-100 font-mono text-xs p-3"
+             data-test-runner-target="resultsBody">
+          <div class="text-gray-400 text-center py-4 text-sm">
+            <%= t('exercises.click_run_tests') %>
           </div>
         </div>
       </div>
