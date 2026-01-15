@@ -75,77 +75,85 @@ export default class extends Controller {
   }
 
   displayResults(result, isSubmit) {
-    const { success, output, errors, test_results, execution_time } = result
+    try {
+      const { success, output, errors, test_results, execution_time } = result
 
-    // Update header
-    if (success) {
-      this.resultsHeaderTarget.className = "px-4 py-3 border-b flex items-center justify-between bg-green-50"
-      this.resultsStatusTarget.className = "text-sm text-green-600 font-medium"
-      this.resultsStatusTarget.textContent = isSubmit ? "All tests passed! Solution submitted." : "All tests passed!"
-    } else {
-      this.resultsHeaderTarget.className = "px-4 py-3 border-b flex items-center justify-between bg-red-50"
-      this.resultsStatusTarget.className = "text-sm text-red-600 font-medium"
-      this.resultsStatusTarget.textContent = "Some tests failed"
-    }
+      // Update header
+      if (success) {
+        this.resultsHeaderTarget.className = "px-3 py-2 border-b flex items-center justify-between bg-green-50"
+        this.resultsStatusTarget.className = "text-sm text-green-600 font-medium"
+        this.resultsStatusTarget.textContent = isSubmit ? "All tests passed! Solution submitted." : "All tests passed!"
+      } else {
+        this.resultsHeaderTarget.className = "px-3 py-2 border-b flex items-center justify-between bg-red-50"
+        this.resultsStatusTarget.className = "text-sm text-red-600 font-medium"
+        this.resultsStatusTarget.textContent = "Some tests failed"
+      }
 
-    // Build results HTML
-    let html = ""
+      // Build results HTML
+      let html = ""
 
-    if (execution_time) {
-      html += `<div class="text-gray-500 text-xs mb-3">Execution time: ${execution_time.toFixed(3)}s</div>`
-    }
+      if (execution_time) {
+        html += `<div class="text-gray-500 text-xs mb-3">Execution time: ${execution_time.toFixed(3)}s</div>`
+      }
 
-    if (errors && errors.length > 0) {
-      html += `<div class="bg-red-100 text-red-800 p-3 rounded-lg mb-3 whitespace-pre-wrap">${this.escapeHtml(errors.join("\n"))}</div>`
-    }
+      // Handle errors - ensure it's an array
+      const errorsArray = Array.isArray(errors) ? errors : (errors ? [errors] : [])
+      if (errorsArray.length > 0 && errorsArray.some(e => e)) {
+        html += `<div class="bg-red-100 text-red-800 p-3 rounded-lg mb-3 whitespace-pre-wrap">${this.escapeHtml(errorsArray.filter(e => e).join("\n"))}</div>`
+      }
 
-    if (test_results && test_results.examples) {
-      const examples = test_results.examples
-      const passed = examples.filter(e => e.status === "passed").length
-      const failed = examples.filter(e => e.status === "failed").length
+      // Handle test results
+      const examples = test_results?.examples || []
+      if (examples.length > 0) {
+        const passed = examples.filter(e => e.status === "passed").length
+        const failed = examples.filter(e => e.status === "failed").length
 
-      html += `<div class="mb-3 flex items-center space-x-4">
-        <span class="text-green-600">${passed} passed</span>
-        <span class="text-red-600">${failed} failed</span>
-      </div>`
-
-      html += `<div class="space-y-2">`
-      examples.forEach(example => {
-        const icon = example.status === "passed" ? "text-green-500" : "text-red-500"
-        const bgColor = example.status === "passed" ? "bg-green-50" : "bg-red-50"
-        const statusIcon = example.status === "passed" ? "&#10003;" : "&#10007;"
-
-        html += `<div class="p-3 rounded-lg ${bgColor}">
-          <div class="flex items-start">
-            <span class="${icon} mr-2">${statusIcon}</span>
-            <div class="flex-1">
-              <div class="font-medium">${this.escapeHtml(example.full_description)}</div>
-              ${example.status === "failed" && example.exception ? `
-                <div class="mt-2 text-sm text-red-700 whitespace-pre-wrap">${this.escapeHtml(example.exception.message || "")}</div>
-              ` : ""}
-            </div>
-          </div>
+        html += `<div class="mb-3 flex items-center space-x-4">
+          <span class="text-green-600">${passed} passed</span>
+          <span class="text-red-600">${failed} failed</span>
         </div>`
-      })
-      html += `</div>`
-    }
 
-    if (output) {
-      html += `<div class="mt-3 p-3 bg-gray-100 rounded-lg">
-        <div class="text-xs text-gray-500 mb-1">Output:</div>
-        <pre class="whitespace-pre-wrap text-gray-800">${this.escapeHtml(output)}</pre>
-      </div>`
-    }
+        html += `<div class="space-y-2">`
+        examples.forEach(example => {
+          const icon = example.status === "passed" ? "text-green-500" : "text-red-500"
+          const bgColor = example.status === "passed" ? "bg-green-50" : "bg-red-50"
+          const statusIcon = example.status === "passed" ? "&#10003;" : "&#10007;"
 
-    if (!html) {
-      html = `<div class="text-gray-500 text-center py-4">No results to display</div>`
-    }
+          html += `<div class="p-3 rounded-lg ${bgColor}">
+            <div class="flex items-start">
+              <span class="${icon} mr-2">${statusIcon}</span>
+              <div class="flex-1">
+                <div class="font-medium">${this.escapeHtml(example.full_description || "")}</div>
+                ${example.status === "failed" && example.exception?.message ? `
+                  <div class="mt-2 text-sm text-red-700 whitespace-pre-wrap">${this.escapeHtml(example.exception.message)}</div>
+                ` : ""}
+              </div>
+            </div>
+          </div>`
+        })
+        html += `</div>`
+      }
 
-    this.resultsBodyTarget.innerHTML = html
+      if (output) {
+        html += `<div class="mt-3 p-3 bg-gray-100 rounded-lg">
+          <div class="text-xs text-gray-500 mb-1">Output:</div>
+          <pre class="whitespace-pre-wrap text-gray-800">${this.escapeHtml(output)}</pre>
+        </div>`
+      }
 
-    // Handle success animation for submit
-    if (isSubmit && success) {
-      this.showSuccessAnimation()
+      if (!html) {
+        html = `<div class="text-gray-500 text-center py-4">No results to display</div>`
+      }
+
+      this.resultsBodyTarget.innerHTML = html
+
+      // Handle success animation for submit
+      if (isSubmit && success) {
+        this.showSuccessAnimation()
+      }
+    } catch (error) {
+      console.error("Error displaying results:", error)
+      this.showError("Error displaying results: " + error.message)
     }
   }
 
