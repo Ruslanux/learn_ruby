@@ -70,120 +70,101 @@
 
   <!-- Main Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:h-[calc(100%-3.5rem)]">
-    <!-- Left Panel: Instructions & Tests -->
-    <div class="flex flex-col space-y-3 sm:space-y-4 overflow-hidden">
-      <!-- Instructions -->
-      <div class="bg-white rounded-xl shadow-md flex-1 overflow-hidden flex flex-col min-h-[150px] sm:min-h-[200px] lg:min-h-0">
-        <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between">
-          <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.instructions') %></h2>
-          <% if @exercise.translated_hints.present? && @exercise.translated_hints.any? %>
-            <button type="button"
-                    data-action="click->code-editor#toggleHints"
-                    class="text-xs text-red-600 hover:text-red-700 transition"
-                    data-show-text="<%= t('exercises.show_hints') %>"
-                    data-hide-text="<%= t('exercises.hide_hints') %>">
-              <%= t('exercises.show_hints') %>
-            </button>
-          <% end %>
-        </div>
-        <div class="p-3 overflow-y-auto flex-1 prose prose-sm max-w-none text-sm">
-          <%= render_markdown(@exercise.translated_instructions) %>
-
-          <% if @exercise.translated_hints.present? && @exercise.translated_hints.any? %>
-            <div data-code-editor-target="hints" class="hidden mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-              <h4 class="text-yellow-800 font-medium mb-2 text-xs"><%= t('exercises.hints') %>:</h4>
-              <ul class="list-disc list-inside text-yellow-700 space-y-1 text-xs">
-                <% @exercise.translated_hints.each do |hint| %>
-                  <li><%= hint %></li>
-                <% end %>
-              </ul>
-            </div>
-          <% end %>
-        </div>
+    <!-- Instructions (1st on mobile, left-top on desktop) -->
+    <div class="order-1 lg:order-1 bg-white rounded-xl shadow-md overflow-hidden flex flex-col min-h-[150px] sm:min-h-[200px] lg:flex-1">
+      <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between flex-shrink-0">
+        <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.instructions') %></h2>
+        <% if @exercise.translated_hints.present? && @exercise.translated_hints.any? %>
+          <button type="button"
+                  data-action="click->code-editor#toggleHints"
+                  class="text-xs text-red-600 hover:text-red-700 transition"
+                  data-show-text="<%= t('exercises.show_hints') %>"
+                  data-hide-text="<%= t('exercises.hide_hints') %>">
+            <%= t('exercises.show_hints') %>
+          </button>
+        <% end %>
       </div>
+      <div class="p-3 overflow-y-auto flex-1 prose prose-sm max-w-none text-sm">
+        <%= render_markdown(@exercise.translated_instructions) %>
 
-      <!-- Tests Preview - fixed height, same as Results panel -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 h-[160px] sm:h-[190px] lg:h-[240px]">
-        <button type="button"
-                class="w-full px-3 py-2 bg-gray-50 border-b flex items-center justify-between lg:cursor-default flex-shrink-0"
-                data-action="click->collapsible#toggle"
-                data-collapsible-target="button">
-          <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.tests') %> (RSpec)</h2>
-          <svg class="w-4 h-4 text-gray-500 lg:hidden transition-transform" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-          </svg>
-        </button>
-        <div class="hidden lg:block h-[calc(100%-2.5rem)]" data-collapsible-target="content">
-          <div class="p-3 overflow-y-auto bg-gray-900 text-gray-100 font-mono text-xs h-full">
-            <pre class="whitespace-pre-wrap"><%= @exercise.test_code %></pre>
+        <% if @exercise.translated_hints.present? && @exercise.translated_hints.any? %>
+          <div data-code-editor-target="hints" class="hidden mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+            <h4 class="text-yellow-800 font-medium mb-2 text-xs"><%= t('exercises.hints') %>:</h4>
+            <ul class="list-disc list-inside text-yellow-700 space-y-1 text-xs">
+              <% @exercise.translated_hints.each do |hint| %>
+                <li><%= hint %></li>
+              <% end %>
+            </ul>
           </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Code Editor (2nd on mobile, right-top on desktop) -->
+    <div class="order-2 lg:order-2 bg-white rounded-xl shadow-md overflow-hidden flex flex-col min-h-[200px] lg:flex-1">
+      <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between flex-shrink-0">
+        <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.your_code') %></h2>
+        <button type="button"
+                data-action="click->code-editor#reset"
+                class="text-xs text-gray-500 hover:text-gray-700 transition">
+          <%= t('exercises.reset_code') %>
+        </button>
+      </div>
+      <div class="flex-1 overflow-hidden" data-code-editor-target="editor">
+      </div>
+    </div>
+
+    <!-- Tests Panel (3rd on mobile, left-bottom on desktop) -->
+    <div class="order-3 lg:order-3 bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 h-[180px] sm:h-[200px] lg:h-[260px]">
+      <button type="button"
+              class="w-full px-3 py-2 bg-gray-50 border-b flex items-center justify-between lg:cursor-default flex-shrink-0"
+              data-action="click->collapsible#toggle"
+              data-collapsible-target="button">
+        <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.tests') %> (RSpec)</h2>
+        <svg class="w-4 h-4 text-gray-500 lg:hidden transition-transform" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div class="hidden lg:block h-[calc(100%-2.5rem)]" data-collapsible-target="content">
+        <div class="p-3 overflow-y-auto bg-gray-900 text-gray-100 font-mono text-xs h-full">
+          <pre class="whitespace-pre-wrap"><%= @exercise.test_code %></pre>
         </div>
       </div>
     </div>
 
-    <!-- Right Panel: Editor & Results -->
-    <div class="flex flex-col space-y-3 sm:space-y-4 overflow-hidden">
-      <!-- Code Editor - flex to match Instructions height -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col flex-1 min-h-[200px] lg:min-h-0">
-        <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between flex-shrink-0">
-          <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.your_code') %></h2>
-          <button type="button"
-                  data-action="click->code-editor#reset"
-                  class="text-xs text-gray-500 hover:text-gray-700 transition">
-            <%= t('exercises.reset_code') %>
-          </button>
+    <!-- Results Panel with Buttons (4th on mobile, right-bottom on desktop) -->
+    <div class="order-4 lg:order-4 bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 h-[180px] sm:h-[200px] lg:h-[260px]">
+      <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between flex-shrink-0"
+           data-test-runner-target="resultsHeader">
+        <div class="flex items-center space-x-2">
+          <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.results.title') %></h2>
+          <span data-test-runner-target="resultsStatus" class="text-xs"></span>
         </div>
-        <div class="flex-1 overflow-hidden" data-code-editor-target="editor">
-        </div>
-        <!-- Action Buttons inside Code Editor panel -->
-        <div class="flex space-x-2 p-3 bg-gray-50 border-t">
+        <div class="flex items-center space-x-2">
           <button type="button"
                   data-action="click->test-runner#run"
                   data-test-runner-target="runButton"
-                  class="flex-1 bg-gray-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-gray-700 transition flex items-center justify-center space-x-1.5 text-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span><%= t('exercises.run_tests') %></span>
+                  class="bg-gray-600 text-white py-1 px-3 rounded font-medium hover:bg-gray-700 transition text-xs">
+            <%= t('exercises.run_tests') %>
           </button>
-
           <% if user_signed_in? %>
             <button type="button"
                     data-action="click->test-runner#submit"
                     data-test-runner-target="submitButton"
-                    class="flex-1 bg-red-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-red-700 transition flex items-center justify-center space-x-1.5 text-sm">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-              <span><%= t('exercises.submit') %></span>
+                    class="bg-red-600 text-white py-1 px-3 rounded font-medium hover:bg-red-700 transition text-xs">
+              <%= t('exercises.submit') %>
             </button>
           <% else %>
-            <%= link_to new_user_session_path,
-                        class: "flex-1 bg-red-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-red-700 transition flex items-center justify-center space-x-1.5 text-sm" do %>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-              </svg>
-              <span><%= t('exercises.sign_in_to_submit') %></span>
+            <%= link_to new_user_session_path, class: "bg-red-600 text-white py-1 px-3 rounded font-medium hover:bg-red-700 transition text-xs" do %>
+              <%= t('nav.sign_in') %>
             <% end %>
           <% end %>
         </div>
       </div>
-
-      <!-- Results Panel - fixed height, same as Tests panel -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 h-[160px] sm:h-[190px] lg:h-[240px]">
-        <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between flex-shrink-0"
-             data-test-runner-target="resultsHeader">
-          <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.results.title') %></h2>
-          <span data-test-runner-target="resultsStatus" class="text-xs text-gray-500">
-            <%= t('exercises.waiting_for_tests') %>
-          </span>
-        </div>
-        <div class="h-[calc(100%-2.5rem)] overflow-y-auto bg-gray-900 text-gray-100 font-mono text-xs p-3"
-             data-test-runner-target="resultsBody">
-          <div class="text-gray-400 text-center py-4 text-sm">
-            <%= t('exercises.click_run_tests') %>
-          </div>
+      <div class="h-[calc(100%-2.5rem)] overflow-y-auto bg-gray-900 text-gray-100 font-mono text-xs p-3"
+           data-test-runner-target="resultsBody">
+        <div class="text-gray-400 text-center py-4 text-sm">
+          <%= t('exercises.click_run_tests') %>
         </div>
       </div>
     </div>
