@@ -9,6 +9,10 @@ servers:
   web:
     hosts:
       - 77.42.38.197
+    options:
+      # Mount Docker socket for sandbox container execution
+      volume:
+        - /var/run/docker.sock:/var/run/docker.sock
 
 # Proxy configuration (SSL disabled for IP-based access)
 proxy:
