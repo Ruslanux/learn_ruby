@@ -42,5 +42,4 @@ DEPLOYMENT_GUIDE.md
 /config/deploy.yml
 /config/database.yml
 /.kamal/
-/.github/
 /docker/
