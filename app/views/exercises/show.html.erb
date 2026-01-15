@@ -123,8 +123,8 @@
 
     <!-- Right Panel: Editor & Results -->
     <div class="flex flex-col space-y-3 sm:space-y-4 overflow-hidden">
-      <!-- Code Editor - fixed height, won't shrink -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col h-[200px] sm:h-[250px] lg:h-[300px] flex-shrink-0">
+      <!-- Code Editor - flex to match Instructions height -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col flex-1 min-h-[200px] lg:min-h-0">
         <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between flex-shrink-0">
           <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.your_code') %></h2>
           <button type="button"
@@ -135,45 +135,43 @@
         </div>
         <div class="flex-1 overflow-hidden" data-code-editor-target="editor">
         </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="flex space-x-2 sm:space-x-3">
-        <button type="button"
-                data-action="click->test-runner#run"
-                data-test-runner-target="runButton"
-                class="flex-1 bg-gray-600 text-white py-2.5 sm:py-3 px-3 rounded-xl font-semibold hover:bg-gray-700 transition flex items-center justify-center space-x-1.5 text-sm">
-          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          <span><%= t('exercises.run_tests') %></span>
-        </button>
-
-        <% if user_signed_in? %>
+        <!-- Action Buttons inside Code Editor panel -->
+        <div class="flex space-x-2 p-3 bg-gray-50 border-t">
           <button type="button"
-                  data-action="click->test-runner#submit"
-                  data-test-runner-target="submitButton"
-                  class="flex-1 bg-red-600 text-white py-2.5 sm:py-3 px-3 rounded-xl font-semibold hover:bg-red-700 transition flex items-center justify-center space-x-1.5 text-sm">
-            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  data-action="click->test-runner#run"
+                  data-test-runner-target="runButton"
+                  class="flex-1 bg-gray-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-gray-700 transition flex items-center justify-center space-x-1.5 text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            <span><%= t('exercises.submit') %></span>
+            <span><%= t('exercises.run_tests') %></span>
           </button>
-        <% else %>
-          <%= link_to new_user_session_path,
-                      class: "flex-1 bg-red-600 text-white py-2.5 sm:py-3 px-3 rounded-xl font-semibold hover:bg-red-700 transition flex items-center justify-center space-x-1.5 text-sm" do %>
-            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-            </svg>
-            <span class="hidden sm:inline"><%= t('exercises.sign_in_to_submit') %></span>
-            <span class="sm:hidden"><%= t('nav.sign_in') %></span>
+
+          <% if user_signed_in? %>
+            <button type="button"
+                    data-action="click->test-runner#submit"
+                    data-test-runner-target="submitButton"
+                    class="flex-1 bg-red-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-red-700 transition flex items-center justify-center space-x-1.5 text-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span><%= t('exercises.submit') %></span>
+            </button>
+          <% else %>
+            <%= link_to new_user_session_path,
+                        class: "flex-1 bg-red-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-red-700 transition flex items-center justify-center space-x-1.5 text-sm" do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+              </svg>
+              <span><%= t('exercises.sign_in_to_submit') %></span>
+            <% end %>
           <% end %>
-        <% end %>
+        </div>
       </div>
 
-      <!-- Results Panel - styled like Tests panel -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0">
+      <!-- Results Panel - aligned with Tests panel -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
         <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between"
              data-test-runner-target="resultsHeader">
           <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.results.title') %></h2>
@@ -181,10 +179,10 @@
             <%= t('exercises.waiting_for_tests') %>
           </span>
         </div>
-        <div class="max-h-[150px] sm:max-h-[180px] lg:max-h-[220px]">
-          <div class="p-3 overflow-y-auto font-mono text-xs h-full max-h-[150px] sm:max-h-[180px] lg:max-h-[220px]"
+        <div class="max-h-[120px] sm:max-h-[150px] lg:max-h-[200px]">
+          <div class="p-3 overflow-y-auto bg-gray-900 text-gray-100 font-mono text-xs max-h-[120px] sm:max-h-[150px] lg:max-h-[200px]"
                data-test-runner-target="resultsBody">
-            <div class="text-gray-500 text-center py-4 text-sm">
+            <div class="text-gray-400 text-center py-4 text-sm">
               <%= t('exercises.click_run_tests') %>
             </div>
           </div>

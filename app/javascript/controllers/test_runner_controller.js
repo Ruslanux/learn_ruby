@@ -80,12 +80,12 @@ export default class extends Controller {
 
       // Update header
       if (success) {
-        this.resultsHeaderTarget.className = "px-3 py-2 bg-green-50 border-b flex items-center justify-between"
-        this.resultsStatusTarget.className = "text-xs text-green-600 font-medium"
+        this.resultsHeaderTarget.className = "px-3 py-2 bg-green-100 border-b flex items-center justify-between"
+        this.resultsStatusTarget.className = "text-xs text-green-700 font-medium"
         this.resultsStatusTarget.textContent = isSubmit ? "All tests passed! Solution submitted." : "All tests passed!"
       } else {
-        this.resultsHeaderTarget.className = "px-3 py-2 bg-red-50 border-b flex items-center justify-between"
-        this.resultsStatusTarget.className = "text-xs text-red-600 font-medium"
+        this.resultsHeaderTarget.className = "px-3 py-2 bg-red-100 border-b flex items-center justify-between"
+        this.resultsStatusTarget.className = "text-xs text-red-700 font-medium"
         this.resultsStatusTarget.textContent = "Some tests failed"
       }
 
@@ -93,13 +93,13 @@ export default class extends Controller {
       let html = ""
 
       if (execution_time) {
-        html += `<div class="text-gray-500 text-xs mb-3">Execution time: ${execution_time.toFixed(3)}s</div>`
+        html += `<div class="text-gray-400 text-xs mb-3">Execution time: ${execution_time.toFixed(3)}s</div>`
       }
 
       // Handle errors - ensure it's an array
       const errorsArray = Array.isArray(errors) ? errors : (errors ? [errors] : [])
       if (errorsArray.length > 0 && errorsArray.some(e => e)) {
-        html += `<div class="bg-red-100 text-red-800 p-3 rounded-lg mb-3 whitespace-pre-wrap">${this.escapeHtml(errorsArray.filter(e => e).join("\n"))}</div>`
+        html += `<div class="bg-red-900/50 text-red-300 p-3 rounded mb-3 whitespace-pre-wrap">${this.escapeHtml(errorsArray.filter(e => e).join("\n"))}</div>`
       }
 
       // Handle test results
@@ -109,23 +109,23 @@ export default class extends Controller {
         const failed = examples.filter(e => e.status === "failed").length
 
         html += `<div class="mb-2 flex items-center space-x-3 text-xs">
-          <span class="text-green-600">${passed} passed</span>
-          <span class="text-red-600">${failed} failed</span>
+          <span class="text-green-400">${passed} passed</span>
+          <span class="text-red-400">${failed} failed</span>
         </div>`
 
         html += `<div class="space-y-1.5">`
         examples.forEach(example => {
-          const icon = example.status === "passed" ? "text-green-500" : "text-red-500"
-          const bgColor = example.status === "passed" ? "bg-green-50" : "bg-red-50"
+          const icon = example.status === "passed" ? "text-green-400" : "text-red-400"
+          const bgColor = example.status === "passed" ? "bg-green-900/30" : "bg-red-900/30"
           const statusIcon = example.status === "passed" ? "&#10003;" : "&#10007;"
 
           html += `<div class="p-2 rounded ${bgColor}">
             <div class="flex items-start">
               <span class="${icon} mr-1.5">${statusIcon}</span>
               <div class="flex-1">
-                <div class="text-xs">${this.escapeHtml(example.full_description || "")}</div>
+                <div class="text-xs text-gray-200">${this.escapeHtml(example.full_description || "")}</div>
                 ${example.status === "failed" && example.exception?.message ? `
-                  <div class="mt-1 text-xs text-red-700 whitespace-pre-wrap">${this.escapeHtml(example.exception.message)}</div>
+                  <div class="mt-1 text-xs text-red-300 whitespace-pre-wrap">${this.escapeHtml(example.exception.message)}</div>
                 ` : ""}
               </div>
             </div>
@@ -135,14 +135,14 @@ export default class extends Controller {
       }
 
       if (output) {
-        html += `<div class="mt-2 p-2 bg-gray-100 rounded">
+        html += `<div class="mt-2 p-2 bg-gray-800 rounded">
           <div class="text-xs text-gray-500 mb-1">Output:</div>
-          <pre class="whitespace-pre-wrap text-xs text-gray-800">${this.escapeHtml(output)}</pre>
+          <pre class="whitespace-pre-wrap text-xs text-gray-300">${this.escapeHtml(output)}</pre>
         </div>`
       }
 
       if (!html) {
-        html = `<div class="text-gray-500 text-center py-4">No results to display</div>`
+        html = `<div class="text-gray-400 text-center py-4">No results to display</div>`
       }
 
       this.resultsBodyTarget.innerHTML = html
@@ -158,13 +158,13 @@ export default class extends Controller {
   }
 
   showLoading() {
-    this.resultsHeaderTarget.className = "px-3 py-2 bg-gray-50 border-b flex items-center justify-between"
-    this.resultsStatusTarget.className = "text-xs text-blue-600"
+    this.resultsHeaderTarget.className = "px-3 py-2 bg-blue-100 border-b flex items-center justify-between"
+    this.resultsStatusTarget.className = "text-xs text-blue-700"
     this.resultsStatusTarget.textContent = "Running tests..."
     this.resultsBodyTarget.innerHTML = `
-      <div class="flex items-center justify-center py-6">
-        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-        <span class="ml-3 text-blue-600 text-sm">Executing your code...</span>
+      <div class="flex items-center justify-center py-6 bg-gray-900">
+        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>
+        <span class="ml-3 text-blue-400 text-sm">Executing your code...</span>
       </div>
     `
   }
