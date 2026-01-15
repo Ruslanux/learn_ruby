@@ -7,14 +7,20 @@ export default class extends Controller {
   }
 
   connect() {
+    // Store current code before Turbo cache
+    document.addEventListener("turbo:before-cache", this.beforeCache.bind(this))
     this.initializeEditorWhenReady()
   }
 
   disconnect() {
-    // Clean up editor on disconnect (for Turbo navigation)
+    document.removeEventListener("turbo:before-cache", this.beforeCache.bind(this))
+    // Don't destroy editor on disconnect - let Turbo handle it
+  }
+
+  beforeCache() {
+    // Save current code to a data attribute before caching
     if (this.editor) {
-      this.editor.toTextArea && this.editor.toTextArea()
-      this.editor = null
+      this.editorTarget.dataset.savedCode = this.editor.getValue()
     }
   }
 
@@ -33,20 +39,32 @@ export default class extends Controller {
   }
 
   initializeEditor() {
-    // Don't reinitialize if editor already exists
-    if (this.editor) return
-
-    // Decode base64 initial code
-    let initialCode = ""
-    try {
-      initialCode = atob(this.initialCodeValue)
-    } catch (e) {
-      console.error("Failed to decode initial code:", e)
-      initialCode = "# Your code here"
+    // Check if CodeMirror already exists in this element
+    const existingCM = this.editorTarget.querySelector(".CodeMirror")
+    if (existingCM) {
+      // Try to get existing CodeMirror instance
+      if (existingCM.CodeMirror) {
+        this.editor = existingCM.CodeMirror
+        this.element.codeEditor = this
+        return
+      }
+      // Remove stale CodeMirror element
+      existingCM.remove()
     }
 
-    // Clear the target element first
-    this.editorTarget.innerHTML = ""
+    // Get initial code - prefer saved code (from Turbo cache), then initial value
+    let initialCode = ""
+    if (this.editorTarget.dataset.savedCode) {
+      initialCode = this.editorTarget.dataset.savedCode
+      delete this.editorTarget.dataset.savedCode
+    } else {
+      try {
+        initialCode = atob(this.initialCodeValue)
+      } catch (e) {
+        console.error("Failed to decode initial code:", e)
+        initialCode = "# Your code here"
+      }
+    }
 
     // Initialize CodeMirror
     this.editor = CodeMirror(this.editorTarget, {
