@@ -172,19 +172,21 @@
         <% end %>
       </div>
 
-      <!-- Results Panel - fixed height, scrollable content -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0 h-[250px] sm:h-[280px] lg:h-[300px] flex flex-col">
-        <div class="px-3 py-2 border-b flex items-center justify-between flex-shrink-0"
+      <!-- Results Panel - styled like Tests panel -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden flex-shrink-0">
+        <div class="px-3 py-2 bg-gray-50 border-b flex items-center justify-between"
              data-test-runner-target="resultsHeader">
           <h2 class="font-semibold text-gray-800 text-sm"><%= t('exercises.results.title') %></h2>
           <span data-test-runner-target="resultsStatus" class="text-xs text-gray-500">
             <%= t('exercises.waiting_for_tests') %>
           </span>
         </div>
-        <div class="p-3 overflow-y-auto font-mono text-xs flex-1"
-             data-test-runner-target="resultsBody">
-          <div class="text-gray-500 text-center py-4 sm:py-6 text-sm">
-            <%= t('exercises.click_run_tests') %>
+        <div class="max-h-[150px] sm:max-h-[180px] lg:max-h-[220px]">
+          <div class="p-3 overflow-y-auto font-mono text-xs h-full max-h-[150px] sm:max-h-[180px] lg:max-h-[220px]"
+               data-test-runner-target="resultsBody">
+            <div class="text-gray-500 text-center py-4 text-sm">
+              <%= t('exercises.click_run_tests') %>
+            </div>
           </div>
         </div>
       </div>
