@@ -39,7 +39,5 @@
 # Ignore deployment and infrastructure files
 CLAUDE.md
 DEPLOYMENT_GUIDE.md
-/config/deploy.yml
 /config/database.yml
 /.kamal/
-/docker/

@@ -1,0 +1,98 @@
+# Name of your application. Used to uniquely configure containers.
+service: learn-ruby
+
+# Name of the container image.
+image: ruslanux/learn-ruby
+
+# Deploy to these servers.
+servers:
+  web:
+    hosts:
+      - 77.42.38.197
+
+# Proxy configuration (SSL disabled for IP-based access)
+proxy:
+  ssl: false
+  host: 77.42.38.197
+  healthcheck:
+    path: /up
+    interval: 3
+    timeout: 5
+
+# Credentials for your image host.
+registry:
+  # Specify the registry server, if you're not using Docker Hub
+  # server: ghcr.io
+  username: ruslanux
+
+  # Always use an access token rather than real password when possible.
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Inject ENV variables into containers (secrets come from .kamal/secrets).
+env:
+  secret:
+    - RAILS_MASTER_KEY
+    - DATABASE_PASSWORD
+  clear:
+    # Database connection
+    DB_HOST: learn-ruby-db
+
+    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
+    SOLID_QUEUE_IN_PUMA: true
+
+    # Rails environment
+    RAILS_ENV: production
+    RAILS_LOG_TO_STDOUT: true
+    RAILS_SERVE_STATIC_FILES: true
+
+    # Set number of cores available to the application (adjust based on server)
+    WEB_CONCURRENCY: 2
+
+    # Sandbox settings
+    USE_DOCKER_SANDBOX: "true"
+
+# Aliases for common commands
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
+  migrate: app exec "bin/rails db:migrate"
+
+# Use a persistent storage volume for local Active Storage files.
+volumes:
+  - "learn_ruby_storage:/rails/storage"
+
+# Bridge fingerprinted assets between versions
+asset_path: /rails/public/assets
+
+# Configure the image builder.
+builder:
+  arch: amd64
+  # Build image via remote server (useful for faster amd64 builds on arm64 computers)
+  # remote: ssh://docker@docker-builder-server
+
+# Accessory services
+accessories:
+  db:
+    image: postgres:16-alpine
+    host: 77.42.38.197
+    port: "127.0.0.1:5432:5432"
+    env:
+      clear:
+        POSTGRES_DB: learn_ruby_production
+        POSTGRES_USER: learn_ruby
+      secret:
+        - POSTGRES_PASSWORD
+    directories:
+      - data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    host: 77.42.38.197
+    port: "127.0.0.1:6379:6379"
+    directories:
+      - data:/data
+
+# Health check is configured via proxy in Kamal 2.x
