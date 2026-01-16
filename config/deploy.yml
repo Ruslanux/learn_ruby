@@ -46,6 +46,9 @@ env:
     RAILS_LOG_TO_STDOUT: true
     RAILS_SERVE_STATIC_FILES: true
 
+    # SSL configuration
+    FORCE_SSL: true
+
     # Set number of cores available to the application (adjust based on server)
     WEB_CONCURRENCY: 2
 
