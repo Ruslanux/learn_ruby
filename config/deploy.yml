@@ -10,10 +10,10 @@ servers:
     hosts:
       - 77.42.38.197
 
-# Proxy configuration (SSL disabled for IP-based access)
+# Proxy configuration with SSL
 proxy:
-  ssl: false
-  host: 77.42.38.197
+  ssl: true
+  host: learn-ruby.org
   healthcheck:
     path: /up
     interval: 3
