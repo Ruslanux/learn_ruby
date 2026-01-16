@@ -88,11 +88,4 @@ accessories:
     directories:
       - data:/var/lib/postgresql/data
 
-  redis:
-    image: redis:7-alpine
-    host: 77.42.38.197
-    port: "127.0.0.1:6379:6379"
-    directories:
-      - data:/data
-
 # Health check is configured via proxy in Kamal 2.x
