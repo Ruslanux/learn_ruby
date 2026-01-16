@@ -136,6 +136,13 @@ jobs:
       - name: Install Kamal
         run: gem install kamal
 
+      - name: Debug secrets
+        run: |
+          echo "DOCKERHUB_TOKEN length: ${#DOCKER_TOKEN}"
+          echo "DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}"
+        env:
+          DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Deploy with Kamal
         env:
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
