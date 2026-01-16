@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       member do
         post :run
         post :submit
+        post :view_solution
       end
     end
   end

@@ -3,7 +3,9 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["editor", "hints", "solution", "solutionButton"]
   static values = {
-    initialCode: String
+    initialCode: String,
+    viewSolutionUrl: String,
+    solutionViewed: Boolean
   }
 
   connect() {
@@ -132,13 +134,63 @@ export default class extends Controller {
     }
   }
 
-  toggleSolution() {
-    if (this.hasSolutionTarget && this.hasSolutionButtonTarget) {
-      const isHidden = this.solutionTarget.classList.toggle("hidden")
-      const showText = this.solutionButtonTarget.dataset.showText
-      const hideText = this.solutionButtonTarget.dataset.hideText
-      this.solutionButtonTarget.textContent = isHidden ? showText : hideText
+  async toggleSolution() {
+    if (!this.hasSolutionTarget || !this.hasSolutionButtonTarget) return
+
+    const isCurrentlyHidden = this.solutionTarget.classList.contains("hidden")
+
+    // If solution is visible, just hide it
+    if (!isCurrentlyHidden) {
+      this.solutionTarget.classList.add("hidden")
+      this.solutionButtonTarget.textContent = this.solutionButtonTarget.dataset.showText
+      return
     }
+
+    // If solution was already viewed before, just show it
+    if (this.solutionViewedValue) {
+      this.showSolution()
+      return
+    }
+
+    // First time viewing - show confirmation
+    const confirmMessage = this.solutionButtonTarget.dataset.confirmText ||
+      "Warning: If you view the solution, you will not receive points for this exercise. Continue?"
+
+    if (!confirm(confirmMessage)) {
+      return
+    }
+
+    // Mark solution as viewed on server (if user is logged in)
+    if (this.viewSolutionUrlValue) {
+      try {
+        const response = await fetch(this.viewSolutionUrlValue, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": this.getCSRFToken(),
+            "Accept": "application/json"
+          }
+        })
+
+        if (response.ok) {
+          this.solutionViewedValue = true
+        }
+      } catch (error) {
+        console.error("Failed to mark solution as viewed:", error)
+      }
+    }
+
+    this.showSolution()
+  }
+
+  showSolution() {
+    this.solutionTarget.classList.remove("hidden")
+    this.solutionButtonTarget.textContent = this.solutionButtonTarget.dataset.hideText
+  }
+
+  getCSRFToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]')
+    return meta ? meta.content : ""
   }
 
   runTests() {

@@ -1,7 +1,7 @@
 class ExercisesController < ApplicationController
   before_action :set_lesson
   before_action :set_exercise
-  before_action :authenticate_user!, only: [:submit]
+  before_action :authenticate_user!, only: [:submit, :view_solution]
 
   def show
     @user_progress = current_user&.progress_for(@exercise)
@@ -59,10 +59,18 @@ class ExercisesController < ApplicationController
       execution_time: result.execution_time
     )
 
-    # If passed, mark as completed and award points
+    # If passed, mark as completed and award points (only if solution wasn't viewed)
+    points_earned = 0
     if result.success && !user_progress.completed?
-      user_progress.complete!(@exercise.points)
-      current_user.add_points!(@exercise.points)
+      if user_progress.solution_viewed?
+        # Mark as completed but don't award points
+        user_progress.complete!(0)
+      else
+        # Award full points
+        user_progress.complete!(@exercise.points)
+        current_user.add_points!(@exercise.points)
+        points_earned = @exercise.points
+      end
     end
 
     render json: {
@@ -73,9 +81,19 @@ class ExercisesController < ApplicationController
       execution_time: result.execution_time,
       attempts: user_progress.attempts,
       completed: user_progress.completed?,
-      points_earned: result.success ? @exercise.points : 0,
-      total_points: current_user.total_points
+      points_earned: points_earned,
+      total_points: current_user.total_points,
+      solution_viewed: user_progress.solution_viewed?
     }
+  end
+
+  # POST /lessons/:lesson_id/exercises/:id/view_solution
+  # Marks that user viewed the solution (no points will be awarded)
+  def view_solution
+    user_progress = current_user.progress_for(@exercise)
+    user_progress.update!(solution_viewed: true)
+
+    render json: { success: true }
   end
 
   private

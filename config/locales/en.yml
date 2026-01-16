@@ -104,6 +104,7 @@ en:
     show_solution: "Show Solution"
     hide_solution: "Hide Solution"
     solution: "Solution"
+    solution_warning: "Warning: If you view the solution, you will not receive points for this exercise. Continue?"
     hint: "Hint %{number}"
     starter_code: "Starter Code"
     your_code: "Your Code"

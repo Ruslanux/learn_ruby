@@ -23,6 +23,8 @@
 <div class="lg:min-h-[calc(100vh-8rem)]"
      data-controller="code-editor test-runner timer collapsible"
      data-code-editor-initial-code-value="<%= Base64.strict_encode64(@initial_code || '') %>"
+     data-code-editor-view-solution-url-value="<%= user_signed_in? ? view_solution_lesson_exercise_path(@lesson, @exercise) : '' %>"
+     data-code-editor-solution-viewed-value="<%= @user_progress&.solution_viewed? || false %>"
      data-test-runner-run-url-value="<%= run_lesson_exercise_path(@lesson, @exercise) %>"
      data-test-runner-submit-url-value="<%= submit_lesson_exercise_path(@lesson, @exercise) %>">
 
@@ -111,8 +113,9 @@
                     data-code-editor-target="solutionButton"
                     data-show-text="<%= t('exercises.show_solution') %>"
                     data-hide-text="<%= t('exercises.hide_solution') %>"
+                    data-confirm-text="<%= t('exercises.solution_warning') %>"
                     class="text-xs text-red-600 hover:text-red-700 transition">
-              <%= t('exercises.show_solution') %>
+              <%= @user_progress&.solution_viewed? ? t('exercises.hide_solution') : t('exercises.show_solution') %>
             </button>
           <% end %>
           <button type="button"
@@ -123,11 +126,8 @@
         </div>
       </div>
       <% if @exercise.solution_code.present? %>
-        <div data-code-editor-target="solution" class="hidden border-b bg-green-50">
-          <div class="px-3 py-2 bg-green-100 border-b">
-            <span class="text-xs font-medium text-green-800"><%= t('exercises.solution') %></span>
-          </div>
-          <pre class="p-3 text-xs font-mono text-green-900 overflow-x-auto"><%= @exercise.solution_code %></pre>
+        <div data-code-editor-target="solution" class="hidden border-b border-green-300 bg-green-50">
+          <pre class="px-3 py-2 text-xs font-mono text-green-800 overflow-x-auto"><%= @exercise.solution_code %></pre>
         </div>
       <% end %>
       <div class="flex-1 overflow-hidden" data-code-editor-target="editor">
