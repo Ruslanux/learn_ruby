@@ -3,7 +3,7 @@ module Api
     class UsersController < BaseController
       def me
         render json: {
-          user: user_json(current_user)
+          user: UserSerializer.serialize(current_user)
         }
       end
 
@@ -23,8 +23,8 @@ module Api
             points_to_next_level: current_user.points_to_next_level,
             current_streak: current_user.current_streak,
             longest_streak: current_user.longest_streak,
-            completed_exercises: completed.map { |p| progress_json(p) },
-            in_progress_exercises: in_progress.map { |p| progress_json(p) }
+            completed_exercises: UserProgressSerializer.serialize_collection(completed),
+            in_progress_exercises: UserProgressSerializer.serialize_collection(in_progress)
           }
         }
       end
@@ -37,67 +37,18 @@ module Api
           achievements: {
             earned_count: earned.count,
             total_count: all_achievements.count,
-            earned: earned.map { |ua| earned_achievement_json(ua) },
-            available: all_achievements.map { |a| achievement_json(a) }
+            earned: serialize_earned_achievements(earned),
+            available: AchievementSerializer.serialize_collection(all_achievements, current_user: current_user)
           }
         }
       end
 
       private
 
-      def user_json(user)
-        {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          level: user.level,
-          total_points: user.total_points,
-          current_streak: user.current_streak,
-          longest_streak: user.longest_streak,
-          rank: user.rank,
-          level_progress: user.level_progress_percentage,
-          points_to_next_level: user.points_to_next_level,
-          completed_exercises_count: user.completed_exercises_count,
-          achievements_count: user.achievements.count,
-          created_at: user.created_at
-        }
-      end
-
-      def progress_json(progress)
-        {
-          exercise_id: progress.exercise.id,
-          exercise_title: progress.exercise.title,
-          lesson_title: progress.exercise.lesson.title,
-          status: progress.status,
-          attempts: progress.attempts,
-          points_earned: progress.points_earned,
-          completed_at: progress.completed_at
-        }
-      end
-
-      def earned_achievement_json(user_achievement)
-        {
-          id: user_achievement.achievement.id,
-          name: user_achievement.achievement.name,
-          description: user_achievement.achievement.description,
-          badge_icon: user_achievement.achievement.badge_icon,
-          category: user_achievement.achievement.category,
-          earned_at: user_achievement.earned_at
-        }
-      end
-
-      def achievement_json(achievement)
-        earned = current_user.has_achievement?(achievement)
-
-        {
-          id: achievement.id,
-          name: achievement.name,
-          description: achievement.description,
-          badge_icon: achievement.badge_icon,
-          category: achievement.category,
-          earned: earned,
-          requirement_met: achievement.requirement_met?(current_user)
-        }
+      def serialize_earned_achievements(user_achievements)
+        user_achievements.map do |ua|
+          AchievementSerializer.serialize(ua.achievement, variant: :earned, user_achievement: ua)
+        end
       end
 
       def calculate_completion_percentage

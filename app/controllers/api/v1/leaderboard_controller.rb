@@ -2,13 +2,14 @@ module Api
   module V1
     class LeaderboardController < BaseController
       def index
+        offset = (params[:offset] || 0).to_i
         @users = User.where(admin: false)
                      .order(total_points: :desc, level: :desc)
                      .limit(params[:limit] || 50)
-                     .offset(params[:offset] || 0)
+                     .offset(offset)
 
         render json: {
-          leaderboard: @users.map.with_index(1) { |user, rank| leaderboard_entry(user, rank + (params[:offset] || 0).to_i) },
+          leaderboard: serialize_leaderboard(@users, offset),
           current_user_rank: current_user.rank,
           total_users: User.where(admin: false).count
         }
@@ -21,7 +22,7 @@ module Api
                      .limit(params[:limit] || 50)
 
         render json: {
-          leaderboard: @users.map.with_index(1) { |user, rank| streak_entry(user, rank) },
+          leaderboard: serialize_streaks(@users),
           current_user: {
             rank: streak_rank(current_user),
             current_streak: current_user.current_streak,
@@ -32,27 +33,16 @@ module Api
 
       private
 
-      def leaderboard_entry(user, rank)
-        {
-          rank: rank,
-          id: user.id,
-          username: user.username,
-          level: user.level,
-          total_points: user.total_points,
-          current_streak: user.current_streak,
-          is_current_user: user.id == current_user.id
-        }
+      def serialize_leaderboard(users, offset)
+        users.map.with_index(1) do |user, index|
+          UserSerializer.serialize(user, variant: :leaderboard, rank: index + offset, current_user: current_user)
+        end
       end
 
-      def streak_entry(user, rank)
-        {
-          rank: rank,
-          id: user.id,
-          username: user.username,
-          current_streak: user.current_streak,
-          longest_streak: user.longest_streak,
-          is_current_user: user.id == current_user.id
-        }
+      def serialize_streaks(users)
+        users.map.with_index(1) do |user, rank|
+          UserSerializer.serialize(user, variant: :streak, rank: rank, current_user: current_user)
+        end
       end
 
       def streak_rank(user)
