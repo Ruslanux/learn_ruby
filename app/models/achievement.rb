@@ -21,34 +21,7 @@ class Achievement < ApplicationRecord
   end
 
   def requirement_met?(user)
-    case category
-    when "points"
-      user.total_points >= (points_required || 0)
-    when "exercises"
-      user.completed_exercises_count >= (exercises_required || 0)
-    when "streak"
-      user.longest_streak >= (streak_required || 0)
-    when "special"
-      check_special_requirement(user)
-    else
-      false
-    end
-  end
-
-  private
-
-  def check_special_requirement(user)
-    case name
-    when "First Steps"
-      user.completed_exercises_count >= 1
-    when "Perfect Score"
-      user.user_progresses.completed.where(attempts: 1).exists?
-    when "Night Owl"
-      user.code_submissions.where("extract(hour from created_at) >= 22 OR extract(hour from created_at) < 6").exists?
-    when "Speed Demon"
-      user.code_submissions.where(passed: true).where("execution_time < 0.1").exists?
-    else
-      false
-    end
+    checker_class = AchievementCheckers::BaseChecker.for(self)
+    checker_class.new(user, self).met?
   end
 end
