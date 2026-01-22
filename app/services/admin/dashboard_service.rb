@@ -26,11 +26,7 @@ module Admin
     end
 
     def popular_exercises(limit: 5)
-      Exercise.joins(:code_submissions)
-              .group("exercises.id")
-              .order("COUNT(code_submissions.id) DESC")
-              .limit(limit)
-              .select("exercises.*, COUNT(code_submissions.id) as submission_count")
+      PopularExercisesQuery.new(limit: limit).call
     end
 
     def top_users(limit: 5)
