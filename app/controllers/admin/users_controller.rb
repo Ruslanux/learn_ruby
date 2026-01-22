@@ -1,8 +1,8 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: [:show, :edit, :update, :destroy, :toggle_admin]
+    include Paginatable
 
-    PER_PAGE = 50
+    before_action :set_user, only: [:show, :edit, :update, :destroy, :toggle_admin]
 
     def index
       @users = User.order(created_at: :desc)
@@ -12,10 +12,7 @@ module Admin
                               "%#{params[:search]}%", "%#{params[:search]}%")
       end
 
-      @total_count = @users.count
-      @page = (params[:page] || 1).to_i
-      @users = @users.offset((@page - 1) * PER_PAGE).limit(PER_PAGE)
-      @total_pages = (@total_count.to_f / PER_PAGE).ceil
+      @users = paginate(@users)
     end
 
     def show

@@ -1,6 +1,6 @@
 module Admin
   class SubmissionsController < BaseController
-    PER_PAGE = 50
+    include Paginatable
 
     def index
       @submissions = CodeSubmission.includes(:user, :exercise)
@@ -15,10 +15,7 @@ module Admin
         @submissions = @submissions.where(passed: false)
       end
 
-      @total_count = @submissions.count
-      @page = (params[:page] || 1).to_i
-      @submissions = @submissions.offset((@page - 1) * PER_PAGE).limit(PER_PAGE)
-      @total_pages = (@total_count.to_f / PER_PAGE).ceil
+      @submissions = paginate(@submissions)
     end
 
     def show
