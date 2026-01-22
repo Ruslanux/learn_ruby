@@ -1,0 +1,13 @@
+<%# Renders a level badge
+    Usage: render "shared/level_badge", level: user.level
+           render "shared/level_badge", level: user.level, size: :small
+%>
+<% size_classes = case local_assigns[:size]
+   when :small then "px-2 py-0.5 text-xs"
+   when :large then "px-3 py-1.5 text-base"
+   else "px-2 sm:px-3 py-1 text-sm"
+   end
+%>
+<span class="inline-flex items-center <%= size_classes %> rounded-full font-medium bg-red-100 text-red-800">
+  Lvl <%= level %>
+</span>

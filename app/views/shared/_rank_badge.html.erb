@@ -1,0 +1,14 @@
+<%# Renders a rank badge with medal for top 3
+    Usage: render "shared/rank_badge", rank: 1
+           render "shared/rank_badge", rank: 5, size: :small
+%>
+<% size_class = local_assigns[:size] == :small ? "text-xl" : "text-xl sm:text-2xl" %>
+<% if rank == 1 %>
+  <span class="<%= size_class %>">🥇</span>
+<% elsif rank == 2 %>
+  <span class="<%= size_class %>">🥈</span>
+<% elsif rank == 3 %>
+  <span class="<%= size_class %>">🥉</span>
+<% else %>
+  <span class="text-gray-500 font-medium">#<%= rank %></span>
+<% end %>

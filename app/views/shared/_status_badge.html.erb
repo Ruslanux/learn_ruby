@@ -1,0 +1,13 @@
+<%# Renders a colored status badge
+    Usage: render "shared/status_badge", passed: true
+           render "shared/status_badge", passed: false
+%>
+<% if passed %>
+  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+    <%= local_assigns[:label] || t('admin.passed') %>
+  </span>
+<% else %>
+  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+    <%= local_assigns[:label] || t('admin.failed') %>
+  </span>
+<% end %>

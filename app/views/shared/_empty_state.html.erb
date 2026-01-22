@@ -1,0 +1,12 @@
+<%# Renders an empty state with icon and message
+    Usage: render "shared/empty_state", icon: "📝", message: "No items", link_text: "Add one", link_path: new_item_path
+%>
+<div class="p-6 sm:p-8 text-center text-gray-500">
+  <% if local_assigns[:icon] %>
+    <div class="text-3xl sm:text-4xl mb-2"><%= icon %></div>
+  <% end %>
+  <p class="text-sm sm:text-base"><%= message %></p>
+  <% if local_assigns[:link_text] && local_assigns[:link_path] %>
+    <%= link_to link_text, link_path, class: "text-red-600 hover:underline text-sm sm:text-base" %>
+  <% end %>
+</div>

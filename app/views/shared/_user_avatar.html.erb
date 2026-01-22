@@ -1,0 +1,14 @@
+<%# Renders a user avatar with first letter
+    Usage: render "shared/user_avatar", username: user.username
+           render "shared/user_avatar", username: user.username, size: :large
+%>
+<% size_classes = case local_assigns[:size]
+   when :small then "w-8 h-8 text-sm"
+   when :large then "w-16 h-16 sm:w-24 sm:h-24 text-2xl sm:text-4xl"
+   else "w-10 h-10 text-base"
+   end
+%>
+<% bg_class = local_assigns[:bg_class] || "bg-red-100 text-red-600" %>
+<div class="<%= bg_class %> rounded-full <%= size_classes %> flex items-center justify-center font-semibold flex-shrink-0">
+  <%= username[0].upcase %>
+</div>

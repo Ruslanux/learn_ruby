@@ -1,0 +1,11 @@
+<%# Renders a streak display with fire emoji
+    Usage: render "shared/streak_display", streak: user.current_streak
+           render "shared/streak_display", streak: user.current_streak, show_days: true
+%>
+<% if streak > 0 %>
+  <span class="<%= local_assigns[:class] || 'text-orange-600' %>">
+    🔥 <%= streak %><%= ' ' + t('profile.days') if local_assigns[:show_days] %>
+  </span>
+<% else %>
+  <span class="text-gray-400"><%= local_assigns[:empty_text] || '-' %></span>
+<% end %>
