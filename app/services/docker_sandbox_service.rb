@@ -47,7 +47,7 @@ class DockerSandboxService
 
   def self.build_image!
     dockerfile_path = Rails.root.join("docker", "sandbox", "Dockerfile")
-    system("docker build -t #{DOCKER_IMAGE} -f #{dockerfile_path} #{dockerfile_path.dirname}")
+    system("docker", "build", "-t", DOCKER_IMAGE, "-f", dockerfile_path.to_s, dockerfile_path.dirname.to_s)
   end
 
   def self.image_exists?
