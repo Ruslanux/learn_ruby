@@ -75,6 +75,33 @@ RSpec.describe RubySandboxService do
       end
     end
 
+    context "with code that never finishes" do
+      before { stub_const("RubySandboxService::TIMEOUT_SECONDS", 1) }
+
+      it "times out and kills the sandbox process" do
+        user_code = <<~RUBY
+          def spin
+            loop { }
+          end
+        RUBY
+
+        test_code = <<~RUBY
+          RSpec.describe "spin" do
+            it "never returns" do
+              spin
+            end
+          end
+        RUBY
+
+        service = described_class.new(user_code: user_code, test_code: test_code)
+        worker = Thread.new { service.execute }
+
+        expect(worker.join(5)).to be_truthy
+        expect(worker.value.errors).to include("timed out")
+        expect(IO.popen([ "pgrep", "-f", "ruby_sandbox.*/runner.rb" ], &:read)).to be_empty
+      end
+    end
+
     context "with forbidden patterns" do
       forbidden_codes = [
         { name: "File access", code: 'File.read("/etc/passwd")' },
