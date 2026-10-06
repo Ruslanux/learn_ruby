@@ -1,6 +1,4 @@
-require "open3"
 require "json"
-require "timeout"
 require "tempfile"
 
 class RubySandboxService
@@ -200,20 +198,27 @@ class RubySandboxService
     RUBY
   end
 
+  # Timeout.timeout around Open3 does not stop the child: Open3's ensure joins
+  # the wait thread, so an infinite loop kept a Puma thread and a CPU core busy
+  # forever. Run the child in its own process group and kill the whole group.
+  # RLIMIT_CPU makes the kernel stop it even if this process dies first.
   def execute_with_timeout(runner_file, results_file)
     begin
-      Timeout.timeout(TIMEOUT_SECONDS) do
-        _output, _status = Open3.capture2e("ruby", runner_file)
+      pid = Process.spawn(
+        "ruby", runner_file,
+        in: File::NULL, out: File::NULL, err: File::NULL,
+        pgroup: true,
+        rlimit_cpu: TIMEOUT_SECONDS + 2
+      )
+      waiter = Process.detach(pid)
+
+      unless waiter.join(TIMEOUT_SECONDS)
+        kill_process_group(pid)
+        waiter.join
+        return default_error_result("Execution timed out (#{TIMEOUT_SECONDS} seconds limit)")
       end
 
       parse_results_file(results_file)
-    rescue Timeout::Error
-      {
-        success: false,
-        output: "",
-        errors: "Execution timed out (#{TIMEOUT_SECONDS} seconds limit)",
-        test_results: []
-      }
     rescue StandardError => e
       {
         success: false,
@@ -222,6 +227,12 @@ class RubySandboxService
         test_results: []
       }
     end
+  end
+
+  def kill_process_group(pid)
+    Process.kill("KILL", -pid)
+  rescue Errno::ESRCH
+    # already exited
   end
 
   def parse_results_file(results_file)
