@@ -1,10 +1,10 @@
 {
   "ignored_warnings": [
     {
-      "fingerprint": "3df6ad5875810fb1ae912a2a877461ea6f8314fdb090f64c0fa48b5b6f9aacec",
-      "note": "False positive: IMAGE_NAME is a constant, Rails.root paths are safe - no user input involved"
+      "fingerprint": "21ab0fe00fdd5899ffc405cff75aadb91b805ee996a614f7e27b08a287e9062d",
+      "note": "Rails 8.0 support ends 2026-11-07: upgrade to Rails 8.1 before then. After that date Brakeman reports a new 'ended' warning and CI fails again."
     }
   ],
-  "updated": "2026-01-14",
-  "brakeman_version": "7.1.2"
+  "updated": "2026-10-06",
+  "brakeman_version": "8.1.0"
 }
