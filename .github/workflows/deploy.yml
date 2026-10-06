@@ -27,19 +27,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Install Kamal
-        run: gem install kamal
-
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 77.42.38.197 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 65.108.56.69 >> ~/.ssh/known_hosts
 
       - name: Deploy with Kamal
         env:
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-        run: kamal deploy
+        run: bin/kamal deploy
