@@ -133,9 +133,8 @@ jobs:
           echo "  StrictHostKeyChecking no" >> ~/.ssh/config
           echo "  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
 
-      - name: Install Kamal
-        run: gem install kamal
-
+      # bin/kamal pins the Gemfile.lock version: the kamal-proxy is shared with
+      # sawab and instrumaster, and a newer Kamal may demand a proxy reboot.
       - name: Deploy with Kamal
         env:
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -146,26 +145,14 @@ jobs:
           # Проверка: первый деплой или обновление
           if ssh root@${SERVER_IP} "docker ps --format '{{.Names}}' | grep -q learn-ruby-web"; then
             echo "=== Обновление существующего деплоя ==="
-            kamal deploy
+            bin/kamal deploy
           else
             echo "=== Первый деплой ==="
-            # Запуск accessories
-            kamal accessory boot db
-            kamal accessory boot redis
+            bin/kamal accessory boot db
 
             # Ждём пока PostgreSQL будет готов
             echo "Waiting for PostgreSQL to be ready..."
             sleep 15
 
-            # Деплой приложения
-            kamal deploy
+            bin/kamal deploy
           fi
-
-      - name: Build sandbox Docker image
-        env:
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-        run: |
-          echo "=== Building sandbox Docker image on server ==="
-          scp docker/sandbox/Dockerfile root@${SERVER_IP}:/tmp/sandbox_dockerfile
-          ssh root@${SERVER_IP} "cd /tmp && docker build -t learn_ruby_sandbox:latest -f sandbox_dockerfile . && rm sandbox_dockerfile"
-          echo "=== Sandbox image built successfully ==="

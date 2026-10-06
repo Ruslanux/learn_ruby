@@ -5,15 +5,23 @@ service: learn-ruby
 image: ruslanux/learn-ruby
 
 # Deploy to these servers.
+# Shared Hetzner CX23 with sawab (sawabapp.org) and instrumaster (raw-IP catch-all).
 servers:
   web:
     hosts:
-      - 77.42.38.197
+      - 65.108.56.69
+    # Sandbox runs untrusted user code inside this container: cap it so a
+    # runaway submission can't starve the other apps on the host.
+    options:
+      memory: 1g
+      cpus: 1
 
 # Proxy configuration with SSL
 proxy:
   ssl: true
-  host: learn-ruby.org
+  hosts:
+    - learn-ruby.org
+    - www.learn-ruby.org
   healthcheck:
     path: /up
     interval: 3
@@ -49,8 +57,7 @@ env:
     # SSL configuration
     FORCE_SSL: true
 
-    # Set number of cores available to the application (adjust based on server)
-    WEB_CONCURRENCY: 2
+    # No WEB_CONCURRENCY → Puma single mode: saves ~200 MB on the shared host.
 
     # Sandbox: process-based (RubySandboxService)
     # Set USE_DOCKER_SANDBOX=true to use Docker isolation (requires Docker CLI in container)
@@ -62,6 +69,12 @@ aliases:
   logs: app logs -f
   dbc: app exec --interactive --reuse "bin/rails dbconsole"
   migrate: app exec "bin/rails db:migrate"
+
+# Rotate container logs on the shared host.
+logging:
+  options:
+    max-size: 20m
+    max-file: "5"
 
 # Use a persistent storage volume for local Active Storage files.
 volumes:
@@ -80,8 +93,8 @@ builder:
 accessories:
   db:
     image: postgres:16-alpine
-    host: 77.42.38.197
-    port: "127.0.0.1:5432:5432"
+    host: 65.108.56.69
+    # No host port: 5432 is taken by sawab-db; the app reaches it as learn-ruby-db over the kamal network.
     env:
       clear:
         POSTGRES_DB: learn_ruby_production
